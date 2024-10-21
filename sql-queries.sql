@@ -1,0 +1,105 @@
+USE small_database;
+GO
+
+-------------------
+CREATE TABLE AppUser (
+	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT user_pk PRIMARY KEY,
+	email NVARCHAR(100) NOT NULL,
+	passwordHash NVARCHAR(255) NOT NULL,
+	passwordSalt VARBINARY(255) NOT NULL
+);
+
+CREATE TABLE Consumer (
+	Id UNIQUEIDENTIFIER CONSTRAINT consumer_pk PRIMARY KEY,
+	firstName NVARCHAR(255) NOT NULL,
+	lastName NVARCHAR(255) NOT NULL,
+	birthDate DATE NOT NULL,
+	telephone VARCHAR(20) NOT NULL
+	CONSTRAINT consumer_fk FOREIGN KEY (Id) REFERENCES AppUser(Id)
+)
+
+CREATE TABLE Administrator (
+	Id UNIQUEIDENTIFIER CONSTRAINT admin_pk PRIMARY KEY,
+	joinedDate DATE NOT NULL,
+	role VARCHAR(20) NOT NULL CONSTRAINT admin_role CHECK (role IN ('BASIC_ADMIN','SUPER_ADMIN')),
+	CONSTRAINT admin_fk FOREIGN KEY (Id) REFERENCES Administrator(Id)
+);
+
+CREATE TABLE Category (
+	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT category_pk PRIMARY KEY,
+	name NVARCHAR(50) NOT NULL
+);
+
+-- create sequnce for product
+CREATE SEQUENCE subCategory_seq AS INT START WITH 1 INCREMENT BY 7 NO CYCLE;
+
+CREATE TABLE SubCategory (
+	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT subCategory_pk PRIMARY KEY,
+	subCategoryNumber  INT DEFAULT NEXT VALUE FOR subCategory_seq CONSTRAINT subCategory_num UNIQUE,
+	name NVARCHAR(50) NOT NULL,
+	categoryId UNIQUEIDENTIFIER CONSTRAINT subCategory_fk FOREIGN KEY (categoryId) REFERENCES Category(Id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- create sequnce for product
+CREATE SEQUENCE product_seq AS INT START WITH 1 INCREMENT BY 3 NO CYCLE;
+
+CREATE TABLE ProductHeader (
+	ProductId UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT product_pk PRIMARY KEY,
+	ProductNumber INT DEFAULT NEXT VALUE FOR product_seq CONSTRAINT product_num UNIQUE,
+	name NVARCHAR(100) NOT NULL,
+	price DECIMAL(10,2) NOT NULL,
+	subCategoryId UNIQUEIDENTIFIER CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategory(Id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE ProductDetail (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_detail_pk PRIMARY KEY,
+	ProductId UNIQUEIDENTIFIER CONSTRAINT product_unique UNIQUE,
+	shortDescribe NVARCHAR(255) NULL,
+	imageUrl NVARCHAR(255) NOT NULL
+	CONSTRAINT product_detail_fk FOREIGN KEY (ProductId) REFERENCES ProductHeader(ProductId) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Car (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	yearManifactured INT NOT NULL,
+	model NVARCHAR(100) NOT NULL,
+	serialNumber NVARCHAR(500) NOT NULL,
+	engineDisplacement NVARCHAR(20),
+	enginePower NVARCHAR(50),
+	longDescription NVARCHAR(2000),
+	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+)
+
+CREATE TABLE Device (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	yearManifactured INT NOT NULL,
+	serialNumber NVARCHAR(500) NOT NULL,
+	weight NVARCHAR(10) NULL,
+	storage NVARCHAR(10) NOT NULL
+	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+)
+
+CREATE TABLE Movie (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	yearRelease INT NOT NULL,
+	genre VARCHAR(50) NOT NULL,
+	duration INT NOT NULL,
+	subtitling NVARCHAR(50) NOT NULL,
+	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+)
+
+CREATE TABLE Mobile (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	screenDiagonal VARCHAR(10) NOT NULL,
+	operativeSystem VARCHAR(50) NOT NULL,
+	color VARCHAR(50) NOT NULL,
+	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
+)
+
+CREATE TABLE Laptop (
+	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	processor VARCHAR(10) NOT NULL,
+	ramMemory VARCHAR(50) NOT NULL,
+	longDescription NVARCHAR(2000),
+	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
+)
