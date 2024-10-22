@@ -43,13 +43,56 @@ CREATE TABLE SubCategory (
 -- create sequnce for product
 CREATE SEQUENCE product_seq AS INT START WITH 1 INCREMENT BY 3 NO CYCLE;
 
+CREATE TABLE Company(
+	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT company_pk PRIMARY KEY,
+	serialNumber NVARCHAR(100) NOT NULL,
+	name NVARCHAR(100) NOT NULL,
+	telephone NVARCHAR(100) NOT NULL,
+	country NVARCHAR(50) NOT NULL
+)
+
+CREATE TABLE Seller (
+	id UNIQUEIDENTIFIER CONSTRAINT seller_pk PRIMARY KEY,
+	address NVARCHAR(255) NOT NULL,
+	city NVARCHAR(100) NOT NULL,
+	hasShop BIT NOT NULL
+	CONSTRAINT seller_fk FOREIGN KEY (id) REFERENCES Company(id) ON DELETE CASCADE
+)
+
+CREATE TABLE Courier (
+	id UNIQUEIDENTIFIER CONSTRAINT courier_pk PRIMARY KEY,
+	deliveryPrice DECIMAL(7,2) NOT NULL
+	CONSTRAINT courier_fk FOREIGN KEY (id) REFERENCES Company(id) ON DELETE CASCADE
+)
+
+CREATE TABLE CourierContact (
+	courierId UNIQUEIDENTIFIER,
+	companyId UNIQUEIDENTIFIER,
+	serialNumContact NVARCHAR(255) NOT NULL,
+	contactInfo NVARCHAR(500)
+	CONSTRAINT courier_contact_pk PRIMARY KEY (courierId,companyId),
+	CONSTRAINT courier_fk FOREIGN KEY (courierId) REFERENCES Courier(id) ON DELETE SET NULL,
+	CONSTRAINT company_fk FOREIGN KEY (companyId) REFERENCES Company(id) ON DELETE SET NULL
+)
+
 CREATE TABLE ProductHeader (
 	ProductId UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT product_pk PRIMARY KEY,
 	ProductNumber INT DEFAULT NEXT VALUE FOR product_seq CONSTRAINT product_num UNIQUE,
 	name NVARCHAR(100) NOT NULL,
 	price DECIMAL(10,2) NOT NULL,
-	subCategoryId UNIQUEIDENTIFIER CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategory(Id) ON DELETE SET NULL ON UPDATE CASCADE
+	subCategoryId UNIQUEIDENTIFIER CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategory(id) ON DELETE SET NULL ON UPDATE CASCADE,
+	produced UNIQUEIDENTIFIER NOT NULL CONSTRAINT produced_seller_fk FOREIGN KEY (produced) REFERENCES Seller(id),
+	store UNIQUEIDENTIFIER NULL CONSTRAINT store_seller_fk FOREIGN KEY (store) REFERENCES Seller (Id)
 );
+
+CREATE TABLE DistributeProduct (
+	productId UNIQUEIDENTIFIER,
+	sellerId UNIQUEIDENTIFIER,
+	distributionPrice DECIMAL(7,2),
+	CONSTRAINT dist_pk PRIMARY KEY (productId,sellerId),
+	CONSTRAINT seller_fk FOREIGN KEY (sellerid) REFERENCES Seller(Id),
+	CONSTRAINT product_fk FOREIGN KEY (productId) REFERENCES ProductHeader(ProductId)
+)
 
 CREATE TABLE ProductDetail (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_detail_pk PRIMARY KEY,
@@ -64,8 +107,8 @@ CREATE TABLE Car (
 	yearManifactured INT NOT NULL,
 	model NVARCHAR(100) NOT NULL,
 	serialNumber NVARCHAR(500) NOT NULL,
-	engineDisplacement NVARCHAR(20),
-	enginePower NVARCHAR(50),
+	engineDisplacement NVARCHAR(20) NOT NULL,
+	enginePower NVARCHAR(50) NOT NULL,
 	longDescription NVARCHAR(2000),
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
 )
