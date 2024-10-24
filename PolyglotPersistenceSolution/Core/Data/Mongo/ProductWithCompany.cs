@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Core.Data.Mongo
 {
-    internal class ProductWithCompany
+    public class ProductWithCompany
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public int ProductNumber { get; set; }
         public string Name { get; set; }
         public string ShortDescription { get; set; }

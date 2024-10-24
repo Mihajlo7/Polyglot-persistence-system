@@ -12,7 +12,7 @@ namespace Core.Data.Mongo
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public long serialNumber { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }

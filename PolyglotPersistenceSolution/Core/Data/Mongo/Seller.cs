@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Core.Data.Mongo
 {
-    public class Seller
+    public class Seller : Company
     {
-        public string Id { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
         public bool HasMarket { get; set; }
