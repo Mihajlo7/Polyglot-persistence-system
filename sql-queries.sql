@@ -18,6 +18,14 @@ CREATE TABLE Consumer (
 	CONSTRAINT consumer_fk FOREIGN KEY (Id) REFERENCES AppUser(Id)
 )
 
+CREATE TABLE CreditCard (
+	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT credit_card_pk PRIMARY KEY,
+	consumerId UNIQUEIDENTIFIER NOT NULL CONSTRAINT credit_card_fk FOREIGN KEY (consumerId) REFERENCES Consumer(Id),
+	number BIGINT NOT NULL,
+	cardType NVARCHAR(20) NOT NULL
+)
+
+
 CREATE TABLE Administrator (
 	Id UNIQUEIDENTIFIER CONSTRAINT admin_pk PRIMARY KEY,
 	joinedDate DATE NOT NULL,
@@ -146,3 +154,43 @@ CREATE TABLE Laptop (
 	longDescription NVARCHAR(2000),
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
 )
+
+CREATE TABLE Chart (
+	id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT chart_pk PRIMARY KEY,
+	total DECIMAL(10,2) NOT NULL DEFAULT 0.0,
+	status INT NOT NULL CONSTRAINT chart_status CHECK (status IN (0,1,2,3)),
+	createdAt DATETIME NOT NULL,
+	updatedAt DATETIME NOT NULL,
+	consumer_id UNIQUEIDENTIFIER NOT NULL CONSTRAINT chart_fk FOREIGN KEY (consumer_id) REFERENCES Consumer(id)
+)
+
+CREATE TABLE ChartItem (
+	chartId UNIQUEIDENTIFIER,
+	productId UNIQUEIDENTIFIER,
+	createdAt DATETIME NOT NULL,
+	CONSTRAINT chart_item_pk PRIMARY KEY(chartId,productId),
+	CONSTRAINT chart_fk FOREIGN KEY (chartId) REFERENCES Chart(id),
+	CONSTRAINT product_fk FOREIGN KEY (productId) REFERENCES ProductHeader(ProductId)
+)
+
+GO
+
+CREATE TRIGGER trgUpdateTotalOnInsertOrDelete
+ON ChartItem
+AFTER INSERT, DELETE
+AS
+BEGIN
+	DECLARE @total DECIMAL(10,2)
+
+	SELECT @total= COALESCE(SUM(p.price),0)
+	FROM ChartItem ci INNER JOIN ProductHeader p ON ci.productId=p.ProductId;
+
+	UPDATE c
+	SET c.total=@total
+	FROM Chart c
+	WHERE c.id IN (
+		SELECT chartId FROM inserted
+		UNION
+		SELECT chartid FROM deleted
+	);
+END;
