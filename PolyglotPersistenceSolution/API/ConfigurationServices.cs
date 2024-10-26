@@ -1,4 +1,6 @@
 ﻿using API.Services;
+using SQLDataAccess;
+using SQLDataAccess.impl;
 
 namespace API
 {
@@ -19,6 +21,13 @@ namespace API
             });
 
             services.AddScoped<IHttpClientFactoryService, HttpClientFactoryService>();
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureRepository(this IServiceCollection services)
+        {
+            services.AddScoped<IConsumerRepository, ConsumerRepository>();
 
             return services;
         }

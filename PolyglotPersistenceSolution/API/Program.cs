@@ -11,6 +11,7 @@ namespace API
             builder.Services.AddControllers();
 
             builder.Services.ConfigureHttpClient(builder.Configuration);
+            builder.Services.ConfigureRepository();
 
             var app = builder.Build();
 

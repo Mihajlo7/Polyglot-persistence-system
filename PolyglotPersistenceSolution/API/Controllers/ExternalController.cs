@@ -1,6 +1,7 @@
 ﻿using API.Services;
 using Core.ExternalData;
 using Microsoft.AspNetCore.Mvc;
+using SQLDataAccess;
 using SQLDataAccess.impl;
 
 namespace API.Controllers
@@ -10,19 +11,24 @@ namespace API.Controllers
     public class ExternalController : ControllerBase
     {
         private readonly IHttpClientFactoryService _httpClientFactoryService;
+        private readonly IConsumerRepository _consumerRepository;
 
-        public ExternalController(IHttpClientFactoryService httpClientFactoryService)
+        public ExternalController(IHttpClientFactoryService httpClientFactoryService,IConsumerRepository consumerRepository)
         {
             _httpClientFactoryService = httpClientFactoryService;
+            _consumerRepository = consumerRepository;
         }
 
         [HttpGet("consumers")]
         public async Task<IActionResult> GetAllConsumers() 
         {
-            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",1);
+            /*
+            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",4);
             ConsumerRepository consumerRepository = new();
             int res= await consumerRepository.InsertConsumerBulk(result);
             return Ok(res);
+            */
+            return Ok(await _consumerRepository.GetAllBySelect());
         }
         [HttpGet("sellers")]
         public async Task<IActionResult> GetAllSellers()
