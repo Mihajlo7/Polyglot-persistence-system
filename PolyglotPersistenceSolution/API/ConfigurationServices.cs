@@ -1,4 +1,6 @@
-﻿namespace API
+﻿using API.Services;
+
+namespace API
 {
     public static class ConfigurationServices
     {
@@ -15,6 +17,8 @@
 
                 config.Timeout=new TimeSpan(0,5,0);
             });
+
+            services.AddScoped<IHttpClientFactoryService, HttpClientFactoryService>();
 
             return services;
         }

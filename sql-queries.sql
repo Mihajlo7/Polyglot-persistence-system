@@ -21,7 +21,7 @@ CREATE TABLE Consumers (
 CREATE TABLE CreditCard (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT credit_card_pk PRIMARY KEY,
 	consumerId UNIQUEIDENTIFIER NOT NULL CONSTRAINT credit_card_fk FOREIGN KEY (consumerId) REFERENCES Consumers(Id) ON DELETE CASCADE,
-	number BIGINT NOT NULL,
+	number NVARCHAR(50) NOT NULL,
 	cardType NVARCHAR(20) NOT NULL
 )
 
@@ -40,8 +40,58 @@ VALUES
 
 INSERT INTO Administrators (Id,joinedDate,role) SELECT id,'2024-10-26','SUPER_ADMIN' FROM Users WHERE email='admin@ecommerce.com';
 INSERT INTO Administrators (Id,joinedDate,role) SELECT id,'2024-10-26','SUPER_ADMIN' FROM Users WHERE email='mihajlo@ecommerce.com';
+
+CREATE TYPE ConsumersTableType AS TABLE (
+	FirstName NVARCHAR(255) ,
+	LastName NVARCHAR(255) ,
+	Email NVARCHAR(100),
+	BirthDate DATE ,
+	Telephone VARCHAR(20),
+	Password NVARCHAR(255),
+	CreditCardType1 NVARCHAR(20),
+	CreditCardNumber1 NVARCHAR(50),
+	CreditCardType2 NVARCHAR(20),
+	CreditCardNumber2 NVARCHAR(50)
+);
+GO
+CREATE OR ALTER PROC insertConsumer(
+	@FirstName NVARCHAR(255) ,
+	@LastName NVARCHAR(255) ,
+	@BirthDate DATE ,
+	@Email NVARCHAR(100),
+	@Telephone VARCHAR(20),
+	@Password NVARCHAR(255),
+	@CreditCardType1 NVARCHAR(20),
+	@CreditCardNumber1 NVARCHAR(50),
+	@CreditCardType2 NVARCHAR(20),
+	@CreditCardNumber2 NVARCHAR(50)
+)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	BEGIN TRAN;
+	BEGIN TRY
+		DECLARE @UserId UNIQUEIDENTIFIER;
+		INSERT INTO Users (email, passwordHash, passwordSalt) VALUES (@Email, HASHBYTES('SHA2_256', @Password), CAST(@Password AS VARBINARY(255)));
+		SELECT @UserId= id  FROM Users WHERE email=@Email;
+		INSERT INTO Consumers (Id,firstname,lastname,birthdate,telephone) VALUES( @UserId, @FirstName,@LastName,@BirthDate,@Telephone);
+
+		INSERT INTO CreditCard (consumerId,cardType,number) VALUES( @UserId, @CreditCardType1, @CreditCardNumber1);
+
+		IF @CreditCardType2 IS NOT NULL AND @CreditCardNumber2 IS NOT NULL
+			INSERT INTO CreditCard (consumerId,cardType,number) VALUES( @UserId, @CreditCardType2, @CreditCardNumber2);
+
+		COMMIT;
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT>0
+			ROLLBACK;
+		THROW; 
+	END CATCH;
+END;
+
 ----------------------------
-CREATE TABLE Category (
+CREATE TABLE Categories (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT category_pk PRIMARY KEY,
 	name NVARCHAR(50) NOT NULL
 );
@@ -49,49 +99,90 @@ CREATE TABLE Category (
 -- create sequnce for product
 CREATE SEQUENCE subCategory_seq AS INT START WITH 1 INCREMENT BY 7 NO CYCLE;
 
-CREATE TABLE SubCategory (
+CREATE TABLE SubCategories (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT subCategory_pk PRIMARY KEY,
 	subCategoryNumber  INT DEFAULT NEXT VALUE FOR subCategory_seq CONSTRAINT subCategory_num UNIQUE,
 	name NVARCHAR(50) NOT NULL,
-	categoryId UNIQUEIDENTIFIER CONSTRAINT subCategory_fk FOREIGN KEY (categoryId) REFERENCES Category(Id) ON DELETE SET NULL ON UPDATE CASCADE
+	categoryId UNIQUEIDENTIFIER CONSTRAINT subCategory_fk FOREIGN KEY (categoryId) REFERENCES Categories(Id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- create sequnce for product
 CREATE SEQUENCE product_seq AS INT START WITH 1 INCREMENT BY 3 NO CYCLE;
 
-CREATE TABLE Company(
+CREATE TABLE Companies(
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT company_pk PRIMARY KEY,
-	serialNumber NVARCHAR(100) NOT NULL,
+	dunsNumber NVARCHAR(100) NOT NULL,
 	name NVARCHAR(100) NOT NULL,
 	telephone NVARCHAR(100) NOT NULL,
 	country NVARCHAR(50) NOT NULL
 )
 
-CREATE TABLE Seller (
+CREATE TABLE Sellers (
 	id UNIQUEIDENTIFIER CONSTRAINT seller_pk PRIMARY KEY,
 	address NVARCHAR(255) NOT NULL,
 	city NVARCHAR(100) NOT NULL,
 	hasShop BIT NOT NULL
-	CONSTRAINT seller_fk FOREIGN KEY (id) REFERENCES Company(id) ON DELETE CASCADE
+	CONSTRAINT seller_fk FOREIGN KEY (id) REFERENCES Companies(id) ON DELETE CASCADE
 )
 
-CREATE TABLE Courier (
+CREATE TABLE Couriers (
 	id UNIQUEIDENTIFIER CONSTRAINT courier_pk PRIMARY KEY,
 	deliveryPrice DECIMAL(7,2) NOT NULL
-	CONSTRAINT courier_fk FOREIGN KEY (id) REFERENCES Company(id) ON DELETE CASCADE
+	CONSTRAINT courier_fk FOREIGN KEY (id) REFERENCES Companies(id) ON DELETE CASCADE
 )
 
-CREATE TABLE CourierContact (
+CREATE TABLE CourierContacts (
 	courierId UNIQUEIDENTIFIER,
 	companyId UNIQUEIDENTIFIER,
 	serialNumContact NVARCHAR(255) NOT NULL,
 	contactInfo NVARCHAR(500)
 	CONSTRAINT courier_contact_pk PRIMARY KEY (courierId,companyId),
-	CONSTRAINT courier_fk FOREIGN KEY (courierId) REFERENCES Courier(id) ON DELETE SET NULL,
-	CONSTRAINT company_fk FOREIGN KEY (companyId) REFERENCES Company(id) ON DELETE SET NULL
+	CONSTRAINT courier_c_fk FOREIGN KEY (courierId) REFERENCES Couriers(id) ,
+	CONSTRAINT company_c_fk FOREIGN KEY (companyId) REFERENCES Companies(id)
 )
 
-CREATE TABLE ProductHeader (
+GO
+CREATE OR ALTER PROC insertSeller 
+(@DunsNumber NVARCHAR(100),@Name  NVARCHAR(100), @Telephone  NVARCHAR(100),@Country NVARCHAR(50),@Address  NVARCHAR(255),@City  NVARCHAR(100), @HasShop BIT) AS
+BEGIN
+	SET NOCOUNT ON;
+	BEGIN TRAN;
+	BEGIN TRY
+		INSERT INTO Companies (dunsNumber,name,telephone,country) VALUES(@DunsNumber,@Name,@Telephone,@Country);
+
+		INSERT INTO Sellers (id,address,city,hasShop) SELECT id, @Address,@City,@HasShop FROM Companies WHERE telephone=@Telephone AND dunsNumber=@DunsNumber;
+
+		COMMIT;
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT>0
+			ROLLBACK;
+		THROW;
+	END CATCH
+END;
+
+GO
+
+CREATE OR ALTER PROC insertCourier 
+(@DunsNumber NVARCHAR(100),@Name  NVARCHAR(100), @Telephone  NVARCHAR(100),@Country NVARCHAR(50),@DeliveryPrice DECIMAL(7,2)) AS
+BEGIN
+	SET NOCOUNT ON;
+	BEGIN TRAN;
+	BEGIN TRY
+		INSERT INTO Companies (dunsNumber,name,telephone,country) VALUES(@DunsNumber,@Name,@Telephone,@Country);
+
+		INSERT INTO Couriers (id,deliveryPrice) SELECT id, @DeliveryPrice FROM Companies WHERE telephone=@Telephone AND dunsNumber=@DunsNumber;
+
+		COMMIT;
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT>0
+			ROLLBACK;
+		THROW;
+	END CATCH
+END;
+-------------------------------
+CREATE TABLE ProductsHeader (
 	ProductId UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT product_pk PRIMARY KEY,
 	ProductNumber INT DEFAULT NEXT VALUE FOR product_seq CONSTRAINT product_num UNIQUE,
 	name NVARCHAR(100) NOT NULL,
@@ -101,7 +192,7 @@ CREATE TABLE ProductHeader (
 	store UNIQUEIDENTIFIER NULL CONSTRAINT store_seller_fk FOREIGN KEY (store) REFERENCES Seller (Id)
 );
 
-CREATE TABLE DistributeProduct (
+CREATE TABLE DistributeProducts (
 	productId UNIQUEIDENTIFIER,
 	sellerId UNIQUEIDENTIFIER,
 	distributionPrice DECIMAL(7,2),
@@ -110,7 +201,7 @@ CREATE TABLE DistributeProduct (
 	CONSTRAINT product_fk FOREIGN KEY (productId) REFERENCES ProductHeader(ProductId)
 )
 
-CREATE TABLE ProductDetail (
+CREATE TABLE ProductDetails (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_detail_pk PRIMARY KEY,
 	ProductId UNIQUEIDENTIFIER CONSTRAINT product_unique UNIQUE,
 	shortDescribe NVARCHAR(255) NULL,
@@ -118,7 +209,7 @@ CREATE TABLE ProductDetail (
 	CONSTRAINT product_detail_fk FOREIGN KEY (ProductId) REFERENCES ProductHeader(ProductId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Car (
+CREATE TABLE Cars (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
 	yearManifactured INT NOT NULL,
 	model NVARCHAR(100) NOT NULL,
@@ -129,7 +220,7 @@ CREATE TABLE Car (
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
 )
 
-CREATE TABLE Device (
+CREATE TABLE Devices (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
 	yearManifactured INT NOT NULL,
 	serialNumber NVARCHAR(500) NOT NULL,
@@ -138,7 +229,7 @@ CREATE TABLE Device (
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
 )
 
-CREATE TABLE Movie (
+CREATE TABLE Movies (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
 	yearRelease INT NOT NULL,
 	genre VARCHAR(50) NOT NULL,
@@ -147,7 +238,7 @@ CREATE TABLE Movie (
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
 )
 
-CREATE TABLE Mobile (
+CREATE TABLE Mobiles (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
 	screenDiagonal VARCHAR(10) NOT NULL,
 	operativeSystem VARCHAR(50) NOT NULL,
@@ -155,7 +246,7 @@ CREATE TABLE Mobile (
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
 )
 
-CREATE TABLE Laptop (
+CREATE TABLE Laptops (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
 	processor VARCHAR(10) NOT NULL,
 	ramMemory VARCHAR(50) NOT NULL,
@@ -163,7 +254,7 @@ CREATE TABLE Laptop (
 	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
 )
 
-CREATE TABLE Chart (
+CREATE TABLE Charts (
 	id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT chart_pk PRIMARY KEY,
 	total DECIMAL(10,2) NOT NULL DEFAULT 0.0,
 	status INT NOT NULL CONSTRAINT chart_status CHECK (status IN (0,1,2,3)),
@@ -172,7 +263,7 @@ CREATE TABLE Chart (
 	consumer_id UNIQUEIDENTIFIER NOT NULL CONSTRAINT chart_fk FOREIGN KEY (consumer_id) REFERENCES Consumer(id)
 )
 
-CREATE TABLE ChartItem (
+CREATE TABLE ChartItems (
 	chartId UNIQUEIDENTIFIER,
 	productId UNIQUEIDENTIFIER,
 	createdAt DATETIME NOT NULL,
