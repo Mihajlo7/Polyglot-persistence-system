@@ -2,37 +2,45 @@ USE small_database;
 GO
 
 -------------------
-CREATE TABLE AppUser (
+CREATE TABLE Users (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT user_pk PRIMARY KEY,
 	email NVARCHAR(100) NOT NULL,
 	passwordHash NVARCHAR(255) NOT NULL,
 	passwordSalt VARBINARY(255) NOT NULL
 );
 
-CREATE TABLE Consumer (
+CREATE TABLE Consumers (
 	Id UNIQUEIDENTIFIER CONSTRAINT consumer_pk PRIMARY KEY,
 	firstName NVARCHAR(255) NOT NULL,
 	lastName NVARCHAR(255) NOT NULL,
 	birthDate DATE NOT NULL,
 	telephone VARCHAR(20) NOT NULL
-	CONSTRAINT consumer_fk FOREIGN KEY (Id) REFERENCES AppUser(Id)
+	CONSTRAINT consumer_fk FOREIGN KEY (Id) REFERENCES Users(Id) ON DELETE CASCADE
 )
 
 CREATE TABLE CreditCard (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT credit_card_pk PRIMARY KEY,
-	consumerId UNIQUEIDENTIFIER NOT NULL CONSTRAINT credit_card_fk FOREIGN KEY (consumerId) REFERENCES Consumer(Id),
+	consumerId UNIQUEIDENTIFIER NOT NULL CONSTRAINT credit_card_fk FOREIGN KEY (consumerId) REFERENCES Consumers(Id) ON DELETE CASCADE,
 	number BIGINT NOT NULL,
 	cardType NVARCHAR(20) NOT NULL
 )
 
 
-CREATE TABLE Administrator (
+CREATE TABLE Administrators (
 	Id UNIQUEIDENTIFIER CONSTRAINT admin_pk PRIMARY KEY,
 	joinedDate DATE NOT NULL,
 	role VARCHAR(20) NOT NULL CONSTRAINT admin_role CHECK (role IN ('BASIC_ADMIN','SUPER_ADMIN')),
-	CONSTRAINT admin_fk FOREIGN KEY (Id) REFERENCES Administrator(Id)
+	CONSTRAINT admin_fk FOREIGN KEY (Id) REFERENCES Users(Id)
 );
 
+INSERT INTO Users (email, passwordHash, passwordSalt)
+VALUES 
+    ('admin@ecommerce.com', HASHBYTES('SHA2_256', 'admin'), CAST('admin' AS VARBINARY(255))),
+    ('mihajlo@ecommerce.com', HASHBYTES('SHA2_256', 'mihajlo'), CAST('mihajlo' AS VARBINARY(255)));
+
+INSERT INTO Administrators (Id,joinedDate,role) SELECT id,'2024-10-26','SUPER_ADMIN' FROM Users WHERE email='admin@ecommerce.com';
+INSERT INTO Administrators (Id,joinedDate,role) SELECT id,'2024-10-26','SUPER_ADMIN' FROM Users WHERE email='mihajlo@ecommerce.com';
+----------------------------
 CREATE TABLE Category (
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT category_pk PRIMARY KEY,
 	name NVARCHAR(50) NOT NULL
@@ -194,3 +202,18 @@ BEGIN
 		SELECT chartid FROM deleted
 	);
 END;
+
+
+CREATE TABLE Orders  (
+	id UNIQUEIDENTIFIER  DEFAULT NEWSEQUENTIALID() CONSTRAINT order_pk PRIMARY KEY,
+	orderStatus INT DEFAULT 0  CONSTRAINT order_value CHECK(orderStatus IN (0,1,2,3)),
+	createdeAt DATETIME NOT NULL,
+	updatedAt DATETIME NOT NULL,
+	typeOrder INT DEFAULT 0 CONSTRAINT type_order_ck CHECK(typeOrder IN (0,1,2)),
+	address NVARCHAR(100),
+	postalCode NVARCHAR(20),
+	city NVARCHAR(50),
+	country NVARCHAR(20),
+	creditCardId UNIQUEIDENTIFIER NOT NULL CONSTRAINT credit_card_fk FOREIGN KEY (creditCardId) REFERENCES CreditCard(Id),
+	chartId UNIQUEIDENTIFIER UNIQUE CONSTRAINT chart_id FOREIGN KEY (chartId) REFERENCES Chart(id)
+)
