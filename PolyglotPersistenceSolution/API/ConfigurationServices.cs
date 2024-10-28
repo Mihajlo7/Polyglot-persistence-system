@@ -1,4 +1,5 @@
-﻿using API.Services;
+﻿using API.JsonConverter;
+using API.Services;
 using SQLDataAccess;
 using SQLDataAccess.impl;
 
@@ -28,7 +29,17 @@ namespace API
         public static IServiceCollection ConfigureRepository(this IServiceCollection services)
         {
             services.AddScoped<IConsumerRepository, ConsumerRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
 
+            return services;
+        }
+
+        public static IServiceCollection ConfigureConverters(IServiceCollection services)
+        {
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new ProductDetailsConverter());
+            });
             return services;
         }
     }

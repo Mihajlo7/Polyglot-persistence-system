@@ -1,4 +1,5 @@
 ﻿using Core.ExternalData;
+using Core.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SQLDataAccess.impl
 {
-    public class CompanyRepository
+    public class CompanyRepository : ICompanyRepository
     {
         private readonly string connectionString = "Data Source=.;Initial Catalog=small_database;Integrated Security=True;TrustServerCertificate=True;";
 
@@ -85,6 +86,37 @@ namespace SQLDataAccess.impl
 
             return (companyTable, courierTable);
 
+        }
+
+        public async Task<List<SellerModel>> GetAllSellersBySelect()
+        {
+            List<SellerModel> sellers = new();
+
+            string query = "SELECT * FROM Companies c INNER JOIN Sellers s ON (c.Id=s.id);";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (reader.Read()) 
+            {
+                SellerModel model = new SellerModel()
+                {
+                    Id = reader.GetGuid(0),
+                    DunsNumber=reader.GetString(1),
+                    Name = reader.GetString(2),
+                    Telephone = reader.GetString(3),
+                    Country = reader.GetString(4),
+                    Address = reader.GetString(6),
+                    City = reader.GetString(7),
+                    HasShop= reader.GetBoolean(8),
+                };
+
+                sellers.Add(model);
+            }
+            return sellers;
         }
     }
 }

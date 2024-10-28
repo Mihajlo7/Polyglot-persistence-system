@@ -1,3 +1,5 @@
+using API.JsonConverter;
+
 namespace API
 {
     public class Program
@@ -8,10 +10,14 @@ namespace API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new ProductDetailsConverter());
+            });
 
             builder.Services.ConfigureHttpClient(builder.Configuration);
             builder.Services.ConfigureRepository();
+            
 
             var app = builder.Build();
 

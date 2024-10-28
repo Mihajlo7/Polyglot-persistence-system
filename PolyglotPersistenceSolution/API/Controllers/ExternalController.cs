@@ -1,6 +1,7 @@
 ﻿using API.Services;
 using Core.ExternalData;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 using SQLDataAccess;
 using SQLDataAccess.impl;
 
@@ -37,6 +38,15 @@ namespace API.Controllers
             CompanyRepository companyRepository = new();
             int res= await companyRepository.InsertManySellers(sellers);
             return Ok(res);
+        }
+
+        [HttpGet("cars")]
+        public async Task<IActionResult> GetAllCars()
+        {
+            var cars = await _httpClientFactoryService.ExecuteAsync<CarEx>("cars", 1);
+            CompanyRepository companyRepository = new();
+            var sellers= await companyRepository.GetAllSellersBySelect();
+            return Ok(ProductGeneratorService.GenerateCarsList(sellers,cars));
         }
 
         [HttpGet("couriers")]
