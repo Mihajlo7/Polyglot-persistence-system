@@ -27,7 +27,7 @@ namespace SQLDataAccess.impl
             using var reader = await command.ExecuteReaderAsync();
             while (reader.Read())
             {
-                var consumerId = reader.GetGuid(0);
+                var consumerId = reader.GetInt64(0);
                 var email= reader.GetString(1);
                 var passwordHash= reader.GetString(2);
                 var passwordSalt = reader[3] as byte[];
@@ -63,8 +63,8 @@ namespace SQLDataAccess.impl
                 {
                     var creditCard = new CreditCardModel
                     {
-                        Id = reader.GetGuid(9),
-                        ConsumerId = reader.GetGuid(10),
+                        Id = reader.GetInt64(9),
+                        ConsumerId = reader.GetInt64(10),
                         Number = reader.GetString(11),
                         CardType = reader.GetString(12),
                     };

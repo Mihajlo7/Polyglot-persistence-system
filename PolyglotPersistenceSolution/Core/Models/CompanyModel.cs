@@ -8,7 +8,7 @@ namespace Core.Models
 {
     public class CompanyModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string DunsNumber { get; set; }
         public string Name { get; set; }
         public string Telephone {  get; set; }

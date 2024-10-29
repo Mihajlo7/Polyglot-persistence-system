@@ -12,14 +12,14 @@ namespace Services
             List<ProductModel> products = new();
             Random rand = new Random();
             int x = 0;
-            int ika = 1;
+            int productNum = 1;
             int length=sellers.Count;
             foreach (var carRaw in carsRaw)
             {
                 ProductModel product = new ProductModel()
                 {
                     Name = carRaw.Name,
-                    ProductNumber=ika++,
+                    Id=productNum,
                     Price = carRaw.Price,
                     Distribute= new List<SellerModel>(),
                     SubCategory= new SubCategoryModel() { Name=carRaw.SubCategory}
@@ -65,7 +65,7 @@ namespace Services
                 }
 
                 int numberOfDistributors = rand.Next(1, 5);
-                Guid[] guids = new Guid[numberOfDistributors];
+                long[] guids = new long[numberOfDistributors];
                 for (int i = 0; i < numberOfDistributors; i++) 
                 {
                     index = rand.Next(length);

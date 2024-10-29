@@ -8,7 +8,7 @@ namespace Core.Models
 {
     public class ChartModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public decimal Total { get; set; }
         public ChartStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }

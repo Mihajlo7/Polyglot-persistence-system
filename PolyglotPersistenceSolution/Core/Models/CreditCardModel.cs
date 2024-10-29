@@ -8,9 +8,9 @@ namespace Core.Models
 {
     public class CreditCardModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string Number { get; set; }
         public string CardType { get; set; }
-        public Guid ConsumerId { get; set; }
+        public long ConsumerId { get; set; }
     }
 }

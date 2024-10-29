@@ -9,5 +9,6 @@ namespace Core.Models
     public class CourierModel : CompanyModel
     {
         public decimal DeliveryPrice { get; set; }
+        public ICollection<CompanyModel> Contracts { get; set; }
     }
 }

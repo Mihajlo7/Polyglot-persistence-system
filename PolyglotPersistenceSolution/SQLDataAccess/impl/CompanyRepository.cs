@@ -1,6 +1,8 @@
-﻿using Core.ExternalData;
+﻿using Core.Data.Mongo;
+using Core.ExternalData;
 using Core.Models;
 using Microsoft.Data.SqlClient;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -104,7 +106,7 @@ namespace SQLDataAccess.impl
             {
                 SellerModel model = new SellerModel()
                 {
-                    Id = reader.GetGuid(0),
+                    Id = reader.GetInt64(0),
                     DunsNumber=reader.GetString(1),
                     Name = reader.GetString(2),
                     Telephone = reader.GetString(3),
@@ -117,6 +119,107 @@ namespace SQLDataAccess.impl
                 sellers.Add(model);
             }
             return sellers;
+        }
+
+        public async Task<int> InsertManyCouriers(List<CourierEx> couriers)
+        {
+            int count = 0;
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand("insertCourier", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            connection.Open();
+            foreach (CourierEx courier in couriers)
+            {
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@DunsNumber", courier.DunsNumber);
+                command.Parameters.AddWithValue("@Name", courier.Name);
+                command.Parameters.AddWithValue("@Telephone", courier.Telephone);
+                command.Parameters.AddWithValue("@Country", courier.Country);
+                command.Parameters.AddWithValue("@DeliveryPrice", courier.DeliveryPrice);
+
+                await command.ExecuteNonQueryAsync();
+                count++;
+            }
+
+            return count;
+        }
+
+        public async Task<List<CourierModel>> GetAllCouriersBySelect()
+        {
+            List<CourierModel> couriers= new();
+            string query = "SELECT * FROM Companies c INNER JOIN Couriers cc ON (c.Id=cc.Id);";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (reader.Read()) 
+            {
+                CourierModel courier = new CourierModel();
+                courier.Id = reader.GetInt64(0);
+                courier.Name = reader.GetString(2);
+                courier.DunsNumber = reader.GetString(1);
+                courier.Telephone = reader.GetString(3);
+                courier.Country = reader.GetString(4);
+                courier.DeliveryPrice= reader.GetDecimal(6);
+
+                couriers.Add(courier);
+            }
+
+            return couriers;
+        }
+
+        public async Task<List<CompanyModel>> GetAllCompaniesBySelect()
+        {
+            List<CompanyModel> companies = new();
+
+            string query = "SELECT * FROM Companies c;";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (reader.Read())
+            {
+                CompanyModel company = new CompanyModel();
+                company.Id = reader.GetInt64(0);
+                company.Name = reader.GetString(2);
+                company.DunsNumber = reader.GetString(1);
+                company.Telephone = reader.GetString(3);
+                company.Country = reader.GetString(4);
+
+                companies.Add(company);
+            }
+
+            return companies;
+        }
+
+        public async Task<int> InsertManyContracts(List<ContractCourierModel> contractCouriers)
+        {
+            int count = 0;
+
+            string query = "INSERT INTO CourierContacts (courierId,companyId,serialNumContact,endOfContract) " +
+                "VALUES(@courierId,@companyId,@serialNumContact,@endOfContract);";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            connection.Open();
+            foreach (var contract in contractCouriers)
+            {
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@courierId", contract.CourierId);
+                command.Parameters.AddWithValue("@companyId", contract.Company.Id);
+                command.Parameters.AddWithValue("@serialNumContact", contract.SerialNumContract);
+                command.Parameters.AddWithValue("@endOfContract", contract.EndOfContract);
+
+                int rowAffected= await command.ExecuteNonQueryAsync();
+                count += rowAffected;
+            }
+            return count;
         }
     }
 }

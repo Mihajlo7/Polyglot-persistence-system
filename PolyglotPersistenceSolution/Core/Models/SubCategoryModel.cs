@@ -8,10 +8,10 @@ namespace Core.Models
 {
     public class SubCategoryModel
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public int SubCategoryNumber { get; set; }
         public string Name { get; set; }
 
-        public Guid CategoryId { get; set; }
+        public long CategoryId { get; set; }
     }
 }

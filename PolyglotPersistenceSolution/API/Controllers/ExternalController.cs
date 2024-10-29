@@ -23,13 +23,13 @@ namespace API.Controllers
         [HttpGet("consumers")]
         public async Task<IActionResult> GetAllConsumers() 
         {
-            /*
+            
             var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",4);
             ConsumerRepository consumerRepository = new();
             int res= await consumerRepository.InsertConsumerBulk(result);
             return Ok(res);
-            */
-            return Ok(await _consumerRepository.GetAllBySelect());
+            
+            //return Ok(await _consumerRepository.GetAllBySelect());
         }
         [HttpGet("sellers")]
         public async Task<IActionResult> GetAllSellers()
@@ -54,8 +54,20 @@ namespace API.Controllers
         {
             var couriers = await _httpClientFactoryService.ExecuteAsync<CourierEx>("couriers", 1);
             CompanyRepository companyRepository = new();
-            await companyRepository.InsertBulkCouriers(couriers);
-            return Ok(couriers);
+            var res=await companyRepository.InsertManyCouriers(couriers);
+            return Ok(res);
+        }
+
+        [HttpGet("contracts")]
+        public async Task<IActionResult> GetAllContracts()
+        {
+            CompanyRepository companyRepository = new();
+            var couriers= await companyRepository.GetAllCouriersBySelect();
+            var companies = await companyRepository.GetAllCompaniesBySelect();
+
+            var results = CompanyGeneratorService.GenerateContractsForCourier(couriers, companies);
+
+            return Ok(results);
         }
     }
 }

@@ -8,8 +8,7 @@ namespace Core.Models
 {
     public class ProductModel
     {
-        public Guid Id { get; set; }
-        public long ProductNumber { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public SellerModel Produced { get; set; }
