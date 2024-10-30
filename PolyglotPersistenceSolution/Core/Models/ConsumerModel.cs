@@ -12,6 +12,7 @@ namespace Core.Models
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
         public string Telephone { get; set; }
-        public List<CreditCardModel> creditCards { get; set; }
+        public List<CreditCardModel> CreditCards { get; set; }
+        public List<OrderModel> Orders { get; set; }
     }
 }

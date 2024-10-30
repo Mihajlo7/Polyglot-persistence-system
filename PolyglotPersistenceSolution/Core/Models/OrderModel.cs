@@ -14,10 +14,11 @@ namespace Core.Models
         public OrderStatus Status { get; set; }
         public string TypeOrder { get; set; }
         public string Address { get; set; }
-        public string PostalCode { get; set; }
+        public string? PostalCode { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
         public CreditCardModel CreditCard { get; set; }
         public ChartModel Chart { get; set; }
+        public ConsumerModel Consumer { get; set; }
     }
 }

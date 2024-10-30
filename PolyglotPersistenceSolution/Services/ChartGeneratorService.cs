@@ -14,6 +14,7 @@ namespace Services
         {
             List<ChartModel> charts = new();
             Random random = new Random();
+            Array statuses = Enum.GetValues(typeof(ChartStatus));
             int length= consumers.Count();
             
             for(int i = 0; i < length; i++)
@@ -22,33 +23,39 @@ namespace Services
                 {
                     continue;
                 }
-                ChartModel chart = new ChartModel();
-                chart.Consumer = consumers.ElementAt(i);
-                chart.CreatedAt = DateTime.Now;
-                chart.UpdatedAt = DateTime.Now;
-                chart.Status = ChartStatus.Active;
-                chart.Products= new List<ProductModel>();
-
-                HashSet<long> productsId = new HashSet<long>();
-                int numOfProducts = random.Next(1, 5);
-                for(int j=0;j < numOfProducts; j++)
+                int numOfCharts = random.Next(1,3);
+                for(int k = 0; k < numOfCharts; k++)
                 {
-                    while (true)
-                    {
-                        int index = random.Next(products.Count());
-                        ProductModel product = products.ElementAt(index);
+                    ChartModel chart = new ChartModel();
+                    chart.Consumer = consumers.ElementAt(i);
+                    chart.CreatedAt = DateTime.Now;
+                    chart.UpdatedAt = DateTime.Now;
+                    chart.Status = (ChartStatus)statuses.GetValue(random.Next(1, 4));
+                    chart.Products = new List<ProductModel>();
 
-                        if (productsId.Add(product.Id))
+                    HashSet<long> productsId = new HashSet<long>();
+                    int numOfProducts = random.Next(1, 5);
+                    for (int j = 0; j < numOfProducts; j++)
+                    {
+                        while (true)
                         {
-                            chart.Products.Add(product);
-                            break;
+                            int index = random.Next(products.Count());
+                            ProductModel product = products.ElementAt(index);
+
+                            if (productsId.Add(product.Id))
+                            {
+                                chart.Products.Add(product);
+                                break;
+                            }
+
                         }
 
                     }
-
+                    charts.Add(chart);
                 }
-                charts.Add(chart);
             }
+
+            return charts;
         }
     }
 }
