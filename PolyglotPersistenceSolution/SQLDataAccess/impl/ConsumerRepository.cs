@@ -51,7 +51,7 @@ namespace SQLDataAccess.impl
                         LastName = lastName,
                         BirthDate = birthday,
                         Telephone = telephone,
-                        creditCards = new List<CreditCardModel>()
+                        CreditCards = new List<CreditCardModel>()
                     };
 
                     consumers.Add(newConsumer);
@@ -69,7 +69,7 @@ namespace SQLDataAccess.impl
                         CardType = reader.GetString(12),
                     };
 
-                    foundConsumer.creditCards.Add(creditCard);
+                    foundConsumer.CreditCards.Add(creditCard);
                 }
             }
             return consumers;

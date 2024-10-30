@@ -48,6 +48,12 @@ namespace API.Controllers
             var sellers= await companyRepository.GetAllSellersBySelect();
             return Ok(ProductGeneratorService.GenerateProductsList(sellers,cars));
         }
+        [HttpGet("mobiles")]
+        public async Task<IActionResult> GetAllMobiles()
+        {
+            var mobiles = await _httpClientFactoryService.ExecuteAsync<MobileEx>("mobiles", 1);
+            return Ok(mobiles);
+        }
 
         [HttpGet("couriers")]
         public async Task<IActionResult> GetAllCouriers()
@@ -69,5 +75,7 @@ namespace API.Controllers
 
             return Ok(results);
         }
+
+        
     }
 }
