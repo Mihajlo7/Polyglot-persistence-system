@@ -7,34 +7,22 @@ namespace Services
 {
     public static class ProductGeneratorService
     {
-        public static List<ProductModel> GenerateCarsList(List<SellerModel> sellers, List<CarEx> carsRaw)
+        public static List<ProductModel> GenerateProductsList(List<SellerModel> sellers, IEnumerable<ProductAndDetailsEx> productsRaw)
         {
             List<ProductModel> products = new();
             Random rand = new Random();
             int x = 0;
             int productNum = 1;
             int length=sellers.Count;
-            foreach (var carRaw in carsRaw)
+            foreach (var productRaw in productsRaw)
             {
                 ProductModel product = new ProductModel()
                 {
-                    Name = carRaw.Name,
+                    Name = productRaw.Name,
                     Id=productNum,
-                    Price = carRaw.Price,
+                    Price = productRaw.Price,
                     Distribute= new List<SellerModel>(),
-                    SubCategory= new SubCategoryModel() { Name=carRaw.SubCategory}
-                };
-
-                product.Details = new CarDetailsModel()
-                {
-                    ShortDescription = carRaw.ShortDescription,
-                    ImageUrl = carRaw.ImageUrl,
-                    Model= carRaw.SubCategory,
-                    SerialNumber = carRaw.SerialNumber,
-                    EngineDisplacement = $"{carRaw.EngineDisplacement} cm3",
-                    EnginePower = $"{carRaw.EnginePower} hp",
-                    YearManifactured=carRaw.Year,
-                    LongDescription=carRaw.LongDescription,
+                    SubCategory= new SubCategoryModel() { Name=productRaw.SubCategory}
                 };
 
                 // get random number
@@ -80,6 +68,21 @@ namespace Services
                     }
                     product.Distribute.Add(seller);
                     guids[i] = seller.Id;
+                }
+
+                if(productRaw is CarEx carRaw)
+                {
+                    product.Details = new CarDetailsModel()
+                    {
+                        ShortDescription = carRaw.ShortDescription,
+                        ImageUrl = carRaw.ImageUrl,
+                        Model = carRaw.SubCategory,
+                        SerialNumber = carRaw.SerialNumber,
+                        EngineDisplacement = $"{carRaw.EngineDisplacement} cm3",
+                        EnginePower = $"{carRaw.EnginePower} hp",
+                        YearManifactured = carRaw.Year,
+                        LongDescription = carRaw.LongDescription,
+                    };
                 }
                 products.Add(product);
             }

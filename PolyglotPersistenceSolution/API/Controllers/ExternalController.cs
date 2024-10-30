@@ -46,7 +46,7 @@ namespace API.Controllers
             var cars = await _httpClientFactoryService.ExecuteAsync<CarEx>("cars", 1);
             CompanyRepository companyRepository = new();
             var sellers= await companyRepository.GetAllSellersBySelect();
-            return Ok(ProductGeneratorService.GenerateCarsList(sellers,cars));
+            return Ok(ProductGeneratorService.GenerateProductsList(sellers,cars));
         }
 
         [HttpGet("couriers")]
