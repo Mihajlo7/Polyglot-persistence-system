@@ -204,7 +204,7 @@ CREATE TABLE DistributeProducts (
 CREATE TABLE ProductDetails (
 	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_detail_pk PRIMARY KEY,
 	ProductId UNIQUEIDENTIFIER CONSTRAINT product_unique UNIQUE,
-	shortDescribe NVARCHAR(255) NULL,
+	shortDescription NVARCHAR(255) NULL,
 	imageUrl NVARCHAR(255) NOT NULL
 	CONSTRAINT product_detail_fk FOREIGN KEY (ProductId) REFERENCES ProductHeader(ProductId) ON DELETE CASCADE ON UPDATE CASCADE
 );
