@@ -2,6 +2,7 @@
 using Core.ExternalData;
 using Core.Models;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
 
 namespace Services
 {
@@ -21,7 +22,7 @@ namespace Services
                     Name = productRaw.Name,
                     Id=productNum,
                     Price = productRaw.Price,
-                    Distribute= new List<SellerModel>(),
+                    Distribute= new List<DistributeProductModel>(),
                     SubCategory= new SubCategoryModel() { Name=productRaw.SubCategory}
                 };
 
@@ -56,8 +57,6 @@ namespace Services
                 long[] guids = new long[numberOfDistributors];
                 for (int i = 0; i < numberOfDistributors; i++) 
                 {
-                    index = rand.Next(length);
-                    seller = sellers[index];
 
                     while (true)
                     {
@@ -66,8 +65,12 @@ namespace Services
                         if (seller.Id != product.Produced.Id && !guids.Contains(seller.Id))
                             break;
                     }
-                    product.Distribute.Add(seller);
                     guids[i] = seller.Id;
+                    DistributeProductModel distributeProduct = new DistributeProductModel();
+                    distributeProduct.Distributor = seller;
+                    distributeProduct.DistributionPrice=rand.Next(10,70);
+                    product.Distribute.Add(distributeProduct);
+                    
                 }
 
                 if(productRaw is CarEx carRaw)
@@ -80,9 +83,10 @@ namespace Services
                         SerialNumber = carRaw.SerialNumber,
                         EngineDisplacement = $"{carRaw.EngineDisplacement} cm3",
                         EnginePower = $"{carRaw.EnginePower} hp",
-                        YearManifactured = carRaw.Year,
+                        YearManufactured = carRaw.Year,
                         LongDescription = carRaw.LongDescription,
                     };
+                    product.SubCategory.Category = new CategoryModel() { Name = "Car" };
                 }
                 products.Add(product);
             }

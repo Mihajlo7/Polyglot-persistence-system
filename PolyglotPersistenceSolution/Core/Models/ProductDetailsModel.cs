@@ -9,7 +9,7 @@ namespace Core.Models
     public class ProductDetailsModel
     {
         public long Id { get; set; }
-        public long ProductId { get; set; }
+        public long? ProductId { get; set; }
 
         public string? ShortDescription { get; set; }
         public string ImageUrl { get; set; }

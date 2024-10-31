@@ -13,7 +13,7 @@ namespace Core.Models
         public decimal Price { get; set; }
         public SellerModel Produced { get; set; }
         public SellerModel? Store {  get; set; }
-        public ICollection<SellerModel> Distribute {  get; set; }
+        public ICollection<DistributeProductModel> Distribute {  get; set; }
         public SubCategoryModel SubCategory { get; set; }
         public ProductDetailsModel Details { get; set; }
     }

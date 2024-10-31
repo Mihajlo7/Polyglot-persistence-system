@@ -8,7 +8,7 @@ namespace Core.Models
 {
     public class CarDetailsModel : ProductDetailsModel
     {
-        public int YearManifactured {  get; set; }
+        public int YearManufactured {  get; set; }
         public string Model {  get; set; }
         public string SerialNumber { get; set; }
         public string EngineDisplacement { get; set; }

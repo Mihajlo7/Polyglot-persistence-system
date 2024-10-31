@@ -1,4 +1,4 @@
-USE small_database;
+﻿USE small_database;
 GO
 
 -------------------
@@ -106,8 +106,7 @@ CREATE TABLE SubCategories (
 	categoryId UNIQUEIDENTIFIER CONSTRAINT subCategory_fk FOREIGN KEY (categoryId) REFERENCES Categories(Id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- create sequnce for product
-CREATE SEQUENCE product_seq AS INT START WITH 1 INCREMENT BY 3 NO CYCLE;
+
 
 CREATE TABLE Companies(
 	Id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT company_pk PRIMARY KEY,
@@ -182,78 +181,203 @@ BEGIN
 	END CATCH
 END;
 -------------------------------
+-- create sequnce for product
+CREATE SEQUENCE product_seq AS INT START WITH 1000000 INCREMENT BY 1 NO CYCLE;
+CREATE SEQUENCE product_detail_seq AS INT START WITH 1000000 INCREMENT BY 5 NO CYCLE;
+
+CREATE TYPE DistributeProductType AS TABLE(
+	SellerId BIGINT,
+	Price DECIMAL(7,2)
+);
+
+INSERT INTO Categories(name) VALUES ('Car');
+INSERT INTO Categories(name) VALUES ('Mobile');
+INSERT INTO Categories(name) VALUES ('Laptop');
+INSERT INTO Categories(name) VALUES ('Movie');
+
 CREATE TABLE ProductsHeader (
-	ProductId UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT product_pk PRIMARY KEY,
-	ProductNumber INT DEFAULT NEXT VALUE FOR product_seq CONSTRAINT product_num UNIQUE,
+	productId BIGINT DEFAULT NEXT VALUE FOR product_seq CONSTRAINT product_pk PRIMARY KEY,
 	name NVARCHAR(100) NOT NULL,
 	price DECIMAL(10,2) NOT NULL,
-	subCategoryId UNIQUEIDENTIFIER CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategory(id) ON DELETE SET NULL ON UPDATE CASCADE,
-	produced UNIQUEIDENTIFIER NOT NULL CONSTRAINT produced_seller_fk FOREIGN KEY (produced) REFERENCES Seller(id),
-	store UNIQUEIDENTIFIER NULL CONSTRAINT store_seller_fk FOREIGN KEY (store) REFERENCES Seller (Id)
+	subCategoryId BIGINT CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategories(id) ON DELETE SET NULL ON UPDATE CASCADE,
+	produced BIGINT NOT NULL CONSTRAINT produced_seller_fk FOREIGN KEY (produced) REFERENCES Sellers(id),
+	store BIGINT NULL CONSTRAINT store_seller_fk FOREIGN KEY (store) REFERENCES Sellers (Id)
 );
 
 CREATE TABLE DistributeProducts (
-	productId UNIQUEIDENTIFIER,
-	sellerId UNIQUEIDENTIFIER,
+	productId BIGINT,
+	sellerId BIGINT,
 	distributionPrice DECIMAL(7,2),
 	CONSTRAINT dist_pk PRIMARY KEY (productId,sellerId),
-	CONSTRAINT seller_fk FOREIGN KEY (sellerid) REFERENCES Seller(Id),
-	CONSTRAINT product_fk FOREIGN KEY (productId) REFERENCES ProductHeader(ProductId)
+	CONSTRAINT p_seller_fk FOREIGN KEY (sellerid) REFERENCES Sellers(Id),
+	CONSTRAINT product_header_fk FOREIGN KEY (productId) REFERENCES ProductsHeader(ProductId)
 )
 
 CREATE TABLE ProductDetails (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_detail_pk PRIMARY KEY,
-	ProductId UNIQUEIDENTIFIER CONSTRAINT product_unique UNIQUE,
+	ProductDetailId BIGINT DEFAULT NEXT VALUE FOR product_detail_seq CONSTRAINT product_detail_pk PRIMARY KEY,
+	ProductId BIGINT CONSTRAINT product_unique UNIQUE,
 	shortDescription NVARCHAR(255) NULL,
 	imageUrl NVARCHAR(255) NOT NULL
-	CONSTRAINT product_detail_fk FOREIGN KEY (ProductId) REFERENCES ProductHeader(ProductId) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT product_detail_fk FOREIGN KEY (ProductId) REFERENCES ProductsHeader(ProductId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Cars (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	ProductDetailId BIGINT CONSTRAINT cars_pk PRIMARY KEY,
 	yearManifactured INT NOT NULL,
 	model NVARCHAR(100) NOT NULL,
 	serialNumber NVARCHAR(500) NOT NULL,
 	engineDisplacement NVARCHAR(20) NOT NULL,
 	enginePower NVARCHAR(50) NOT NULL,
 	longDescription NVARCHAR(2000),
-	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+	CONSTRAINT cars_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetails (ProductDetailId)
 )
 
 CREATE TABLE Devices (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	ProductDetailId BIGINT CONSTRAINT device_pk PRIMARY KEY,
 	yearManifactured INT NOT NULL,
 	serialNumber NVARCHAR(500) NOT NULL,
 	weight NVARCHAR(10) NULL,
 	storage NVARCHAR(10) NOT NULL
-	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+	CONSTRAINT device_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetails (ProductDetailId)
 )
 
 CREATE TABLE Movies (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	ProductDetailId BIGINT CONSTRAINT movie_pk PRIMARY KEY,
 	yearRelease INT NOT NULL,
 	genre VARCHAR(50) NOT NULL,
 	duration INT NOT NULL,
 	subtitling NVARCHAR(50) NOT NULL,
-	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetail (ProductDetailId)
+	CONSTRAINT movie_fk FOREIGN KEY (ProductDetailId) REFERENCES ProductDetails (ProductDetailId)
 )
 
 CREATE TABLE Mobiles (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	ProductDetailId BIGINT CONSTRAINT mobile_pk PRIMARY KEY,
 	screenDiagonal VARCHAR(10) NOT NULL,
-	operativeSystem VARCHAR(50) NOT NULL,
+	operatingSystem VARCHAR(50) NOT NULL,
 	color VARCHAR(50) NOT NULL,
-	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
+	CONSTRAINT mobile_fk FOREIGN KEY (ProductDetailId) REFERENCES Devices (ProductDetailId)
 )
 
 CREATE TABLE Laptops (
-	ProductDetailId UNIQUEIDENTIFIER CONSTRAINT product_pk PRIMARY KEY,
+	ProductDetailId BIGINT CONSTRAINT laptop_pk PRIMARY KEY,
 	processor VARCHAR(10) NOT NULL,
 	ramMemory VARCHAR(50) NOT NULL,
 	longDescription NVARCHAR(2000),
-	CONSTRAINT product_fk FOREIGN KEY (ProductDetailId) REFERENCES Device (ProductDetailId)
+	CONSTRAINT laptop_fk FOREIGN KEY (ProductDetailId) REFERENCES Devices (ProductDetailId)
 )
+GO
 
+CREATE OR ALTER PROCEDURE  usp_InsertProduct
+    @ProductName NVARCHAR(100),
+    @Price DECIMAL(10, 2),
+    @SubCategoryName NVARCHAR(50),
+    @ProducedBy BIGINT,
+    @StoreId BIGINT = NULL,
+    @ShortDescription NVARCHAR(255) = NULL,
+    @ImageUrl NVARCHAR(255),
+    @ProductType NVARCHAR(50), -- Tip proizvoda ('Car', 'Device', 'Movie', 'Mobile', 'Laptop')
+    @DistributeProducts DistributeProductType READONLY, -- Lista companyId vrednosti za DistributeProducts
+    -- Specifični parametri za Cars
+    @YearManufactured INT = NULL,
+    @CarModel NVARCHAR(100) = NULL,
+    @SerialNumber NVARCHAR(500) = NULL,
+    @EngineDisplacement NVARCHAR(20) = NULL,
+    @EnginePower NVARCHAR(50) = NULL,
+    @LongDescription NVARCHAR(2000) = NULL,
+    -- Specifični parametri za Devices
+    @Weight NVARCHAR(10) = NULL,
+    @Storage NVARCHAR(10) = NULL,
+    -- Specifični parametri za Movies
+    @YearRelease INT = NULL,
+    @Genre VARCHAR(50) = NULL,
+    @Duration INT = NULL,
+    @Subtitling NVARCHAR(50) = NULL,
+    -- Specifični parametri za Mobiles
+    @ScreenDiagonal VARCHAR(10) = NULL,
+    @OperatingSystem VARCHAR(50) = NULL,
+    @Color VARCHAR(50) = NULL,
+    -- Specifični parametri za Laptops
+    @Processor VARCHAR(10) = NULL,
+    @RamMemory VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @NewProductId BIGINT = NEXT VALUE FOR product_seq;
+    DECLARE @NewProductDetailId BIGINT = NEXT VALUE FOR product_detail_seq -- Za GUID identifikator
+    DECLARE @SubCategoryId BIGINT;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Proveravamo da li podkategorija postoji prema imenu i tipu proizvoda
+		SELECT @SubCategoryId = Id 
+		FROM SubCategories 
+		WHERE Name = @SubCategoryName 
+              AND categoryId = (SELECT Id FROM Categories WHERE name = @ProductType);
+
+		-- Ako podkategorija ne postoji, unosimo novu
+		IF @SubCategoryId IS NULL
+		BEGIN
+			INSERT INTO SubCategories (name, categoryId) 
+            VALUES (@SubCategoryName, (SELECT Id FROM Categories WHERE name = @ProductType));
+
+			-- Ponovno dobijanje @SubCategoryId
+			SELECT @SubCategoryId = Id 
+			FROM SubCategories
+			WHERE Name = @SubCategoryName 
+                  AND categoryId = (SELECT Id FROM Categories WHERE name = @ProductType);
+		END;
+
+        -- Umetanje u ProductsHeader
+        INSERT INTO ProductsHeader (ProductId, name, price, subCategoryId, produced, store)
+        VALUES (@NewProductId, @ProductName, @Price, @SubCategoryId, @ProducedBy, @StoreId);
+
+        -- Umetanje u ProductDetails
+        INSERT INTO ProductDetails (ProductDetailId, ProductId, shortDescription, imageUrl)
+        VALUES (@NewProductDetailId, @NewProductId, @ShortDescription, @ImageUrl);
+
+        -- Unos u specifične tabele na osnovu tipa proizvoda
+        IF @ProductType = 'Car'
+        BEGIN
+            INSERT INTO Cars (ProductDetailId, yearManifactured, model, serialNumber, engineDisplacement, enginePower, longDescription)
+            VALUES (@NewProductDetailId, @YearManufactured, @CarModel, @SerialNumber, @EngineDisplacement, @EnginePower, @LongDescription);
+        END
+        ELSE IF @ProductType = 'Device'
+        BEGIN
+            INSERT INTO Devices (ProductDetailId, yearManifactured, serialNumber, weight, storage)
+            VALUES (@NewProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
+        END
+        ELSE IF @ProductType = 'Movie'
+        BEGIN
+            INSERT INTO Movies (ProductDetailId, yearRelease, genre, duration, subtitling)
+            VALUES (@NewProductDetailId, @YearRelease, @Genre, @Duration, @Subtitling);
+        END
+        ELSE IF @ProductType = 'Mobile'
+        BEGIN
+            INSERT INTO Mobiles (ProductDetailId, screenDiagonal, operatingSystem, color)
+            VALUES (@NewProductDetailId, @ScreenDiagonal, @OperatingSystem, @Color);
+        END
+        ELSE IF @ProductType = 'Laptop'
+        BEGIN
+            INSERT INTO Laptops (ProductDetailId, processor, ramMemory, longDescription)
+            VALUES (@NewProductDetailId, @Processor, @RamMemory, @LongDescription);
+        END
+
+        -- Unos u DistributeProducts za svaki SellerId i Price iz DistributeProductType liste
+        INSERT INTO DistributeProducts (productId, sellerId, distributionPrice)
+        SELECT @NewProductId, SellerId, Price 
+        FROM @DistributeProducts;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+------------------------------
 CREATE TABLE Charts (
 	id UNIQUEIDENTIFIER DEFAULT NEWSEQUENTIALID() CONSTRAINT chart_pk PRIMARY KEY,
 	total DECIMAL(10,2) NOT NULL DEFAULT 0.0,

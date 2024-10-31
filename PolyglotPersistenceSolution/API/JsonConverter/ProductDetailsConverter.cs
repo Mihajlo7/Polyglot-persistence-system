@@ -8,7 +8,21 @@ namespace API.JsonConverter
     {
         public override ProductDetailsModel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException("Deserialization is not implemented.");
+            using (JsonDocument document = JsonDocument.ParseValue(ref reader))
+            {
+                JsonElement root = document.RootElement;
+                Console.WriteLine(root.ToString());
+
+                // Odluka o tipu na osnovu prisutnih svojstava
+                if (root.TryGetProperty("enginePower", out _) && root.TryGetProperty("yearManufactured", out _))
+                {
+                    return JsonSerializer.Deserialize<CarDetailsModel>(root.GetRawText(), options);
+                }
+                // Dodajte druge provere za DeviceDetailsModel, MovieDetailsModel, itd.
+
+                // Podrazumevani slučaj ako ni jedan specifičan tip nije prepoznat
+                throw new Exception("Jebem ti mater");
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, ProductDetailsModel value, JsonSerializerOptions options)

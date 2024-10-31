@@ -30,6 +30,7 @@ namespace API
         {
             services.AddScoped<IConsumerRepository, ConsumerRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             return services;
         }
@@ -39,6 +40,7 @@ namespace API
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new ProductDetailsConverter());
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             });
             return services;
         }
