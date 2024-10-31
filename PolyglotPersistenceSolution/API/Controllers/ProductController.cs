@@ -14,10 +14,16 @@ namespace API.Controllers
         {
             _productRepository= productRepository;
         }
-
+        [HttpPost("insert-one")]
         public async Task<IActionResult> InsertProduct([FromBody] ProductModel product)
         {
             return Ok(await _productRepository.InsertOne(product));
+        }
+
+        [HttpPost("insert-many")]
+        public async Task<IActionResult> InsertProduct([FromBody] List<ProductModel> products)
+        {
+            return Ok(await _productRepository.InsertMany(products));
         }
     }
 }

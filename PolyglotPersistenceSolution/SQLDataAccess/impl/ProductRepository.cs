@@ -13,6 +13,18 @@ namespace SQLDataAccess.impl
     public class ProductRepository : IProductRepository
     {
         private readonly string connectionString = "Data Source=.;Initial Catalog=small_database;Integrated Security=True;TrustServerCertificate=True;";
+
+        public async Task<int> InsertMany(List<ProductModel> products)
+        {
+            int count = 0;
+            foreach (var product in products) 
+            {
+                await InsertOne(product);
+                count++;
+            }
+            return count;
+        }
+
         public async Task<int> InsertOne(ProductModel product)
         {
             using var connection = new SqlConnection(connectionString);
@@ -49,13 +61,22 @@ namespace SQLDataAccess.impl
             {
                 CarDetailsModel carDetails= product.Details as CarDetailsModel;
                 command.Parameters.AddWithValue("@YearManufactured", carDetails.YearManufactured);
-               // Console.WriteLine(carDetails.YearManufactured);
                 command.Parameters.AddWithValue("@SerialNumber", carDetails.SerialNumber);
                 command.Parameters.AddWithValue("@EngineDisplacement", carDetails.EngineDisplacement);
                 command.Parameters.AddWithValue("@EnginePower", carDetails.EnginePower);
                 command.Parameters.AddWithValue("@LongDescription", carDetails.LongDescription);
                 command.Parameters.AddWithValue("@CarModel", product.SubCategory.Name);
 
+            } else if (categoryName == "Mobile")
+            {
+                MobileDetailsModel mobileDetails= product.Details as MobileDetailsModel;
+                command.Parameters.AddWithValue("@YearManufactured", mobileDetails.YearManufactured);
+                command.Parameters.AddWithValue("@SerialNumber", mobileDetails.SerialNumber);
+                command.Parameters.AddWithValue("@Weight", mobileDetails.Weight);
+                command.Parameters.AddWithValue("@Storage", mobileDetails.Storage);
+                command.Parameters.AddWithValue("@ScreenDiagonal", mobileDetails.ScreenDiagonal);
+                command.Parameters.AddWithValue("@OperatingSystem", mobileDetails.OperatingSystem);
+                command.Parameters.AddWithValue("@Color", mobileDetails.Color);
             }
 
             int affectedRow= await command.ExecuteNonQueryAsync();

@@ -13,15 +13,18 @@ namespace API.JsonConverter
                 JsonElement root = document.RootElement;
                 Console.WriteLine(root.ToString());
 
-                // Odluka o tipu na osnovu prisutnih svojstava
+                
                 if (root.TryGetProperty("enginePower", out _) && root.TryGetProperty("yearManufactured", out _))
                 {
                     return JsonSerializer.Deserialize<CarDetailsModel>(root.GetRawText(), options);
                 }
-                // Dodajte druge provere za DeviceDetailsModel, MovieDetailsModel, itd.
-
-                // Podrazumevani slučaj ako ni jedan specifičan tip nije prepoznat
-                throw new Exception("Jebem ti mater");
+                
+                if (root.TryGetProperty("storage", out _) && root.TryGetProperty("screenDiagonal", out _))
+                {
+                    return JsonSerializer.Deserialize<MobileDetailsModel>(root.GetRawText(), options);
+                }
+                
+                throw new Exception("Bice bolje");
             }
         }
 
@@ -30,6 +33,10 @@ namespace API.JsonConverter
             if (value is CarDetailsModel carDetails)
             {
                 JsonSerializer.Serialize(writer, carDetails, options);
+            }
+            else if (value is MobileDetailsModel mobileDetails)
+            {
+                JsonSerializer.Serialize(writer, mobileDetails, options);
             }
             else
             {

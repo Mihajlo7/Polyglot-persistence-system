@@ -51,8 +51,10 @@ namespace API.Controllers
         [HttpGet("mobiles")]
         public async Task<IActionResult> GetAllMobiles()
         {
-            var mobiles = await _httpClientFactoryService.ExecuteAsync<MobileEx>("mobiles", 1);
-            return Ok(mobiles);
+            var mobiles = await _httpClientFactoryService.ExecuteAsync<MobileEx>("mobiles", 3);
+            CompanyRepository companyRepository = new();
+            var sellers = await companyRepository.GetAllSellersBySelect();
+            return Ok(ProductGeneratorService.GenerateProductsList(sellers, mobiles));
         }
 
         [HttpGet("couriers")]

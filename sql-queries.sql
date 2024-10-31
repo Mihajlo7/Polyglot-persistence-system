@@ -303,13 +303,15 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    DECLARE @NewProductId BIGINT = NEXT VALUE FOR product_seq;
-    DECLARE @NewProductDetailId BIGINT = NEXT VALUE FOR product_detail_seq -- Za GUID identifikator
+    DECLARE @NewProductId BIGINT;
+    DECLARE @NewProductDetailId BIGINT;
     DECLARE @SubCategoryId BIGINT;
     
     BEGIN TRY
         BEGIN TRANSACTION;
 
+		SET @NewProductId=NEXT VALUE FOR product_seq;
+		SET @NewProductDetailId= NEXT VALUE FOR product_detail_seq;
         -- Proveravamo da li podkategorija postoji prema imenu i tipu proizvoda
 		SELECT @SubCategoryId = Id 
 		FROM SubCategories 
@@ -343,11 +345,6 @@ BEGIN
             INSERT INTO Cars (ProductDetailId, yearManifactured, model, serialNumber, engineDisplacement, enginePower, longDescription)
             VALUES (@NewProductDetailId, @YearManufactured, @CarModel, @SerialNumber, @EngineDisplacement, @EnginePower, @LongDescription);
         END
-        ELSE IF @ProductType = 'Device'
-        BEGIN
-            INSERT INTO Devices (ProductDetailId, yearManifactured, serialNumber, weight, storage)
-            VALUES (@NewProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
-        END
         ELSE IF @ProductType = 'Movie'
         BEGIN
             INSERT INTO Movies (ProductDetailId, yearRelease, genre, duration, subtitling)
@@ -355,11 +352,17 @@ BEGIN
         END
         ELSE IF @ProductType = 'Mobile'
         BEGIN
+			INSERT INTO Devices (ProductDetailId, yearManifactured, serialNumber, weight, storage)
+            VALUES (@NewProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
+
             INSERT INTO Mobiles (ProductDetailId, screenDiagonal, operatingSystem, color)
             VALUES (@NewProductDetailId, @ScreenDiagonal, @OperatingSystem, @Color);
         END
         ELSE IF @ProductType = 'Laptop'
         BEGIN
+			INSERT INTO Devices (ProductDetailId, yearManifactured, serialNumber, weight, storage)
+            VALUES (@NewProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
+
             INSERT INTO Laptops (ProductDetailId, processor, ramMemory, longDescription)
             VALUES (@NewProductDetailId, @Processor, @RamMemory, @LongDescription);
         END

@@ -87,6 +87,21 @@ namespace Services
                         LongDescription = carRaw.LongDescription,
                     };
                     product.SubCategory.Category = new CategoryModel() { Name = "Car" };
+                }else if(productRaw is MobileEx mobileEx)
+                {
+                    product.Details = new MobileDetailsModel()
+                    {
+                        ShortDescription = mobileEx.ShortDescription,
+                        ImageUrl = mobileEx.ImageUrl,
+                        SerialNumber = mobileEx.SerialNumber,
+                        YearManufactured = mobileEx.YearManifactured,
+                        Weight = $"{mobileEx.Weight} kg",
+                        Storage = $"{mobileEx.Storage} gb",
+                        ScreenDiagonal = $"{mobileEx.ScreenDiagonal} in",
+                        OperatingSystem=mobileEx.OperatingSystem,
+                        Color=mobileEx.Color,
+                    };
+                    product.SubCategory.Category = new CategoryModel() { Name = "Mobile" };
                 }
                 products.Add(product);
             }

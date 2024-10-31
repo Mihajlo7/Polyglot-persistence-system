@@ -10,5 +10,6 @@ namespace SQLDataAccess
     public interface IProductRepository
     {
         public Task<int> InsertOne(ProductModel productModel);
+        public Task<int> InsertMany(List<ProductModel> products);
     }
 }
