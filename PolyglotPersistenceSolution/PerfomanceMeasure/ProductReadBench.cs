@@ -18,7 +18,7 @@ namespace PerfomanceMeasure
             productRepository = new ProductRepository();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public async Task JoinWithStar()
         {
             var products = await productRepository.GetAllProductsWithCompaniesBySelect();
@@ -40,6 +40,32 @@ namespace PerfomanceMeasure
         public async Task SubQueryApply()
         {
             var products = await productRepository.GetAllProductsWithCompaniesBySubQueryApply();
+        }
+
+        [Benchmark]
+        public async Task WhereById()
+        {
+            var product = await productRepository.GetProductWithCompaniesById(1002692);
+        }
+        [Benchmark]
+        public async Task WhereByName()
+        {
+            var products= await productRepository.GetProductsWithCompaniesByName("Pajero");
+        }
+        [Benchmark]
+        public async Task WhereByNameLike()
+        {
+            var products = await productRepository.GetProductsWithCompaniesByNameWithLike("Samsung");
+        }
+        [Benchmark]
+        public async Task WhereByProduceCountryAndProductPrice()
+        {
+            var products = await productRepository.GetProductsWithCompaniesByProduceCountryAndPrice("France", 10000);
+        }
+        [Benchmark]
+        public async Task WhereByDistributionCountryAndDistributionPriceAndProductName()
+        {
+            var products = await productRepository.GetProductsWithCompaniesByNameAndDistributionCountryAndDistributionPrice("Samsung","Germany",20);
         }
     }
 }

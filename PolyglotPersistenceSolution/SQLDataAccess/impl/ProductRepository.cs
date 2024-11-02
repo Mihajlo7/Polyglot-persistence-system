@@ -68,6 +68,48 @@ namespace SQLDataAccess.impl
             return products;
         }
 
+        public async Task<ProductModel> GetProductWithCompaniesById(long productId)
+        {
+            var query = ProductsQueries.GetProductById;
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@ProductId", productId);
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+
+            return products.FirstOrDefault();
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithCompaniesByName(string name)
+        {
+            var query= ProductsQueries.GetProductsByName;
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Name",name);
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithCompaniesByNameWithLike(string name)
+        {
+            var query = ProductsQueries.GetProductsByNameWithLike;
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Name",$"{name}%");
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+
+            return products;
+        }
+
         public async Task<int> InsertMany(List<ProductModel> products)
         {
             int count = 0;
@@ -136,6 +178,41 @@ namespace SQLDataAccess.impl
             int affectedRow= await command.ExecuteNonQueryAsync();
             return affectedRow;
 
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithCompaniesByProduceCountryAndPrice(string produceCountry, decimal productPrice)
+        {
+            var query = ProductsQueries.GetProductsByCountryAndPrice;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@ProduceCountry",produceCountry);
+            command.Parameters.AddWithValue("@ProductPrice",productPrice);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithCompaniesByNameAndDistributionCountryAndDistributionPrice(string productName, string distributionCountry, decimal distributionPrice)
+        {
+            var query = ProductsQueries.GetProductsByNameAndDistributionCountryAndPrice;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@DistributeCountry", distributionCountry);
+            command.Parameters.AddWithValue("@ProductName", $"{productName}%");
+            command.Parameters.AddWithValue("@DistributePrice",distributionPrice);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+            return products;
         }
     }
 }

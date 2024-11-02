@@ -118,11 +118,26 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="GetProductById" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithCompanies\GetProductById.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsByCountryAndPrice" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithCompanies\GetProductsByCountryAndPrice.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="GetProductsByJoinOptimised" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Queries\ProductWithCompanies\GetProductsByJoinOptimised.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetProductsByJoinPlain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Queries\ProductWithCompanies\GetProductsByJoinPlain.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsByName" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithCompanies\GetProductsByName.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsByNameAndDistributionCountryAndPrice" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithCompanies\GetProductsByNameAndDistributionCountryAndPrice.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsByNameWithLike" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithCompanies\GetProductsByNameWithLike.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetProductsBySubQuery" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Queries\ProductWithCompanies\GetProductsBySubQuery.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

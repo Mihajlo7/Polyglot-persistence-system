@@ -41,5 +41,32 @@ namespace API.Controllers
         {
             return Ok(await _productRepository.GetAllProductsWithCompaniesBySelectSubQuery());
         }
+        [HttpGet("select/name/{name}")]
+        public async Task<IActionResult> GetProductsByName(string name)
+        {
+            return Ok (await _productRepository.GetProductsWithCompaniesByName(name));
+        }
+
+        [HttpGet("select/name-like/{name}")]
+        public async Task<IActionResult> GetProductsByNameWithLike(string name)
+        {
+            return Ok(await _productRepository.GetProductsWithCompaniesByNameWithLike(name));
+        }
+        [HttpGet("select/id/{id}")]
+        public async Task<IActionResult> GetProductsById(long id)
+        {
+            return Ok(await _productRepository.GetProductWithCompaniesById(id));
+        }
+        [HttpGet("select/produce-coutry/{produceCountry}/price/{price}")]
+        public async Task<IActionResult> GetProductsWithCompaniesByProduceCountry(string produceCountry,decimal price)
+        {
+            return Ok(await _productRepository.GetProductsWithCompaniesByProduceCountryAndPrice(produceCountry,price));
+        }
+
+        [HttpGet("select/productName/{productName}/dCountry/{dCountry}/dPrice{dPrice}")]
+        public async Task<IActionResult> GetProductsWithCompaniesByDistribute(string productName,string dCountry,decimal dPrice)
+        {
+            return Ok(await _productRepository.GetProductsWithCompaniesByNameAndDistributionCountryAndDistributionPrice(productName,dCountry,dPrice));
+        }
     }
 }

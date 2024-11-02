@@ -66,6 +66,30 @@ namespace SQLDataAccess.Resources {
         ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
         ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
         /// </summary>
+        internal static string GetProductById {
+            get {
+                return ResourceManager.GetString("GetProductById", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ph.productId ProductId,ph.name Name, ph.price Price,
+        ///cp.Id ProduceId, cp.dunsNumber ProduceDunsNumber, cp.name ProduceName, cp.telephone ProduceTelephone,cp.country ProduceCountry , p.address ProduceAddress, p.city ProduceCity, p.hasShop ProduceShop,
+        ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
+        ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetProductsByCountryAndPrice {
+            get {
+                return ResourceManager.GetString("GetProductsByCountryAndPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ph.productId ProductId,ph.name Name, ph.price Price,
+        ///cp.Id ProduceId, cp.dunsNumber ProduceDunsNumber, cp.name ProduceName, cp.telephone ProduceTelephone,cp.country ProduceCountry , p.address ProduceAddress, p.city ProduceCity, p.hasShop ProduceShop,
+        ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
+        ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
+        /// </summary>
         internal static string GetProductsByJoinOptimised {
             get {
                 return ResourceManager.GetString("GetProductsByJoinOptimised", resourceCulture);
@@ -83,6 +107,42 @@ namespace SQLDataAccess.Resources {
         internal static string GetProductsByJoinPlain {
             get {
                 return ResourceManager.GetString("GetProductsByJoinPlain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ph.productId ProductId,ph.name Name, ph.price Price,
+        ///cp.Id ProduceId, cp.dunsNumber ProduceDunsNumber, cp.name ProduceName, cp.telephone ProduceTelephone,cp.country ProduceCountry , p.address ProduceAddress, p.city ProduceCity, p.hasShop ProduceShop,
+        ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
+        ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetProductsByName {
+            get {
+                return ResourceManager.GetString("GetProductsByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ph.productId ProductId,ph.name Name, ph.price Price,
+        ///cp.Id ProduceId, cp.dunsNumber ProduceDunsNumber, cp.name ProduceName, cp.telephone ProduceTelephone,cp.country ProduceCountry , p.address ProduceAddress, p.city ProduceCity, p.hasShop ProduceShop,
+        ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
+        ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetProductsByNameAndDistributionCountryAndPrice {
+            get {
+                return ResourceManager.GetString("GetProductsByNameAndDistributionCountryAndPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT ph.productId ProductId,ph.name Name, ph.price Price,
+        ///cp.Id ProduceId, cp.dunsNumber ProduceDunsNumber, cp.name ProduceName, cp.telephone ProduceTelephone,cp.country ProduceCountry , p.address ProduceAddress, p.city ProduceCity, p.hasShop ProduceShop,
+        ///cs.Id StoreId, cs.dunsNumber StoreDunsNumber, cs.name StoreName, cs.telephone StoreTelephone,cs.country StoreCountry , s.address StoreAddress, s.city StoreCity, s.hasShop StoreShop,d.distributionPrice DistributionPrice,
+        ///cd.Id DistributeId, cd.dunsNumb [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetProductsByNameWithLike {
+            get {
+                return ResourceManager.GetString("GetProductsByNameWithLike", resourceCulture);
             }
         }
         
