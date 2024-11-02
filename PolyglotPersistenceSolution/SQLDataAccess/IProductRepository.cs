@@ -12,5 +12,8 @@ namespace SQLDataAccess
         public Task<int> InsertOne(ProductModel productModel);
         public Task<int> InsertMany(List<ProductModel> products);
         public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelect();
+        public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectOptimised();
+        public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectSubQuery();
+        public Task<List<ProductModel>> GetAllProductsWithCompaniesBySubQueryApply();
     }
 }

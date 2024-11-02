@@ -6,7 +6,7 @@ namespace PerfomanceMeasure
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<TestBench>();
+            BenchmarkRunner.Run<ProductReadBench>();
         }
     }
 }

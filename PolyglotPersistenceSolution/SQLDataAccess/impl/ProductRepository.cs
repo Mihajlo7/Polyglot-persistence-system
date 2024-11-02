@@ -1,18 +1,72 @@
 ﻿using Core.Models;
 using Microsoft.Data.SqlClient;
-using MongoDB.Driver.Core.Configuration;
-using System;
-using System.Collections.Generic;
+using MongoDB.Driver;
+using SQLDataAccess.HelperSqlData;
+using SQLDataAccess.Resources;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLDataAccess.impl
 {
     public class ProductRepository : IProductRepository
     {
         private readonly string connectionString = "Data Source=.;Initial Catalog=small_database;Integrated Security=True;TrustServerCertificate=True;";
+
+        public async Task<List<ProductModel>> GetAllProductsWithCompaniesBySelect()
+        {
+            var query = ProductsQueries.GetProductsByJoinPlain;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.CommandTimeout = 120;
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithCompanyBadWay(reader);
+
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectOptimised()
+        {
+            var query= ProductsQueries.GetProductsByJoinOptimised;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.CommandTimeout = 120;
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectSubQuery()
+        {
+            var query = ProductsQueries.GetProductsBySubQuery;
+            using var connection= new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetAllProductsWithCompaniesBySubQueryApply()
+        {
+            var query = ProductsQueries.GetProductsBySubQueryWithApply;
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
+
+            return products;
+        }
 
         public async Task<int> InsertMany(List<ProductModel> products)
         {
