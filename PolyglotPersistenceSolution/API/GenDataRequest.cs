@@ -2,7 +2,7 @@
 {
     public class GenDataRequest
     {
-        public int Iteration { get; set; }
-        public string Endpoint { get; set; }
+        public int Database { get; set; }
+        public string Count { get; set; }
     }
 }
