@@ -214,5 +214,78 @@ namespace SQLDataAccess.impl
             var products = ProductSqlDataHelper.CreateProductsWithCompany(reader);
             return products;
         }
+
+        public async Task<List<ProductModel>> GetProductsWithDetailsByJoin()
+        {
+            var query= ProductsQueries.GetProductWithDetailsLeftJoin;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.CommandTimeout = 120;
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products= ProductSqlDataHelper.CreateProductWithDetailsBadWay(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithDetailsByJoinOptimised()
+        {
+            var query= ProductsQueries.GetProductsWithDetailsByJoinOptimised;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithDetails(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithDetailsBySubQuery()
+        {
+            var query = ProductsQueries.GetProductsWithDetailsBySubQuery;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithDetails(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductsWithDetailsBySubQueryUsingApply()
+        {
+            var query = ProductsQueries.GetProductsWithDetailsBySubQueryApply;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithDetails(reader);
+            return products;
+        }
+
+        public async Task<List<ProductModel>> GetProductWithDetailByProductId(long productId)
+        {
+            var query = ProductsQueries.GetProductWithDetailById;
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@ProductId",productId);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var products = ProductSqlDataHelper.CreateProductsWithDetails(reader);
+            return products;
+        }
     }
 }

@@ -20,5 +20,11 @@ namespace SQLDataAccess
         public Task<ProductModel> GetProductWithCompaniesById(long productId);
         public Task<List<ProductModel>> GetProductsWithCompaniesByProduceCountryAndPrice(string produceCountry,decimal productPrice);
         public Task<List<ProductModel>> GetProductsWithCompaniesByNameAndDistributionCountryAndDistributionPrice(string productName,string distributionCountry,decimal distributionPrice);
+
+        public Task<List<ProductModel>> GetProductsWithDetailsByJoin();
+        public Task<List<ProductModel>> GetProductsWithDetailsByJoinOptimised();
+        public Task<List<ProductModel>> GetProductsWithDetailsBySubQuery();
+        public Task<List<ProductModel>> GetProductsWithDetailsBySubQueryUsingApply();
+        public Task<List<ProductModel>> GetProductWithDetailByProductId(long productId);
     }
 }

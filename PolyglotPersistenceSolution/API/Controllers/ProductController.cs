@@ -68,5 +68,35 @@ namespace API.Controllers
         {
             return Ok(await _productRepository.GetProductsWithCompaniesByNameAndDistributionCountryAndDistributionPrice(productName,dCountry,dPrice));
         }
+
+        [HttpGet("details/join")]
+        public async Task<IActionResult> GetProductsWithDetailsByJoin()
+        {
+            return Ok(await _productRepository.GetProductsWithDetailsByJoin());
+        }
+
+        [HttpGet("details/join/optimised")]
+        public async Task<IActionResult> GetProductsWithDetailsByJoinOptimised()
+        {
+            return Ok(await _productRepository.GetProductsWithDetailsByJoinOptimised());
+        }
+
+        [HttpGet("details/subquery")]
+        public async Task<IActionResult> GetProductsWithDetailsBySubQuery()
+        {
+            return Ok(await _productRepository.GetProductsWithDetailsBySubQuery());
+        }
+
+        [HttpGet("details/subquery/apply")]
+        public async Task<IActionResult> GetProductsWithDetailsBySubQueryUsingApply()
+        {
+            return Ok(await _productRepository.GetProductsWithDetailsBySubQueryUsingApply());
+        }
+
+        [HttpGet("details/id/{productId}")]
+        public async Task<IActionResult> GetProductWithDetailByProductId(long productId)
+        {
+            return Ok(await _productRepository.GetProductWithDetailByProductId(productId));
+        }
     }
 }

@@ -145,4 +145,19 @@
   <data name="GetProductsBySubQueryWithApply" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Queries\ProductWithCompanies\GetProductsBySubQueryWithApply.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="GetProductsWithDetailsByJoinOptimised" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithDetails\GetProductsWithDetailsByJoinOptimised.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsWithDetailsBySubQuery" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithDetails\GetProductsWithDetailsBySubQuery.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductsWithDetailsBySubQueryApply" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithDetails\GetProductsWithDetailsBySubQueryApply.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductWithDetailById" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithDetails\GetProductWithDetailById.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetProductWithDetailsLeftJoin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Queries\ProductWithDetails\GetProductWithDetailsLeftJoin.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>
