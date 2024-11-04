@@ -197,7 +197,8 @@ CREATE TABLE Orders  (
 	city NVARCHAR(50),
 	country NVARCHAR(20),
 	creditCardId BIGINT NOT NULL CONSTRAINT credit_card_order_fk FOREIGN KEY (creditCardId) REFERENCES CreditCard(id),
-	chartId BIGINT CONSTRAINT chart_id FOREIGN KEY (chartId) REFERENCES Charts(id)
+	chartId BIGINT CONSTRAINT chart_id FOREIGN KEY (chartId) REFERENCES Charts(id),
+	consumerId BIGINT CONSTRAINT consumer_order_fk FOREIGN KEY (consumerId) REFERENCES Consumers(id)
 	);
 
 
