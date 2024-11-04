@@ -41,6 +41,7 @@ CREATE OR ALTER PROC CreateCourierContract
 	@ContactInfo NVARCHAR(500)
 AS
 BEGIN
+	SET NOCOUNT ON;
 	INSERT INTO CourierContracts(courierId,consumerId,serialNumContract,contactInfo) 
 	VALUES (@CourierId,@CompanyId,@SerialNumContract,@ContactInfo)
 END;
@@ -60,6 +61,7 @@ CREATE OR ALTER PROC CreateCourierContractBulk
 	@CourierContracts CourierContractType READONLY
 AS
 BEGIN
+	SET NOCOUNT ON;
 	INSERT INTO CourierContracts(courierId,consumerId,serialNumContract,contactInfo)
 	SELECT CourierId,CompanyId,SerialNumContract,ContactInfo
 	FROM @CourierContracts;
@@ -70,6 +72,7 @@ CREATE OR ALTER PROC DeleteCourierContactById
 	@CompanyId BIGINT
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DELETE FROM CourierContracts WHERE companyId=@CompanyId AND courierId=@CourierId;
 END;
 GO
@@ -77,6 +80,7 @@ CREATE OR ALTER PROC DeleteCourierContactsByDeliveryPrice
 	@DeliveryPrice DECIMAL(7,2)
 AS
 BEGIN
+	SET NOCOUNT ON;
 	DELETE FROM CourierContracts WHERE courierId IN (SELECT id FROM Courier WHERE deliveryPrice>@DeliveryPrice);
 END;
 
@@ -88,6 +92,7 @@ CREATE OR ALTER PROC UpdateCourierContactById
 	@ContactInfo NVARCHAR(500)
 AS
 BEGIN
+	SET NOCOUNT ON;
 	UPDATE CourierContracts
 	SET serialNumContract=@SerialNumContract,contactInfo=@ContactInfo
 	WHERE companyId=@CompanyId AND courierId=@CourierId;
@@ -98,6 +103,7 @@ CREATE OR ALTER PROC UpdateCourierContactByName
 	@CourierName NVARCHAR(100)
 AS
 BEGIN
+	SET NOCOUNT ON;
 	UPDATE CourierContracts
 	SET serialNumContract= NEWID()
 	WHERE courierId IN (SELECT id FROM Courier WHERE name=@CourierName)

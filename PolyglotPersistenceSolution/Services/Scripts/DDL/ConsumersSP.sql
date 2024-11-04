@@ -84,8 +84,10 @@ CREATE PROCEDURE CreateConsumerFriendsBulk
     @FriendsData ConsumerFriendType READONLY
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     INSERT INTO ConsumerFriends (consumerId,friendId,friendshipLevel,establishedDate)
-    SELECT consumerId,friendId, friendshipLevel
+    SELECT consumerId,friendId, friendshipLevel,establishedDate
     FROM @FriendsData;
 END;
 
@@ -96,6 +98,8 @@ CREATE PROCEDURE DeleteConsumerFriendById
     @FriendId BIGINT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     DELETE FROM ConsumerFriends WHERE consumerId=@ConsumerId AND friendId=@FriendId;
 END;
 
@@ -105,6 +109,8 @@ CREATE PROCEDURE DeleteConsumerFriendByEstablishedDateAndLevel
     @FriendshipLevel INT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     DELETE FROM ConsumerFriends WHERE establishedDate< @Date AND friendshipLevel>=@FriendshipLevel;
 END;
 
@@ -115,6 +121,8 @@ CREATE PROCEDURE UpdateConsumerFriendFriendshipLevel
     @NewFriendshipLevel BIGINT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE ConsumersFriends
     SET friendshipLevel=@NewFriendshipLevel
     WHERE consumerId = @ConsumerId AND friendId = @FriendId;
@@ -125,6 +133,8 @@ CREATE PROCEDURE UpdateConsumerFriendByEmail
     @Email NVARCHAR(50)
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE ConsumersFriends
     SET friendshipLevel= friendshipLevel - 2
     WHERE consumerId IN (SELECT id FROM Consumers c WHERE c.id IN(SELECT id FROM Users u WHERE u.email=@Email))

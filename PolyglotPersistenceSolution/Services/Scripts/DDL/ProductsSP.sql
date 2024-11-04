@@ -121,6 +121,8 @@ CREATE OR ALTER PROC CreateProductWithSubCategory
     @CategoryName NVARCHAR(50)
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     DECLARE @SubCategoryId BIGINT;
     SELECT @SubCategoryId = Id 
 	FROM SubCategories 
@@ -151,6 +153,8 @@ CREATE OR ALTER PROC CreateProductWithSubCategoryBulk
     @ProductsWithSubcategory ProductWithSubCategoryType READONLY
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     INSERT INTO ProductsHeader (id,name,price,subCategoryId)
     SELECT ProductId,ProductName,ProductPrice, (SELECT id FROM SubCategories WHERE name=SubCategoryName)
     FROM @ProductsWithSubcategory;
@@ -163,7 +167,6 @@ CREATE OR ALTER PROC CreateProductWithDetail
     @ProductType NVARCHAR(20),
     @ShortDescription NVARCHAR(255) = NULL,
     @ImageUrl NVARCHAR(255),
-    @ProductType NVARCHAR(50),
     @YearManufactured INT = NULL,
     @CarModel NVARCHAR(100) = NULL,
     @SerialNumber NVARCHAR(500) = NULL,
@@ -187,6 +190,8 @@ CREATE OR ALTER PROC CreateProductWithDetail
     @RamMemory VARCHAR(50) = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     INSERT INTO ProductDetails (productDetailId,productId,shortDescription,imageUrl)
     VALUES (@ProductDetailId,@ProductId,@ShortDescription,@ImageUrl);
 
@@ -211,7 +216,7 @@ BEGIN
         ELSE IF @ProductType = 'Laptop'
         BEGIN
 			INSERT INTO Devices (ProductDetailId, yearManifactured, serialNumber, weight, storage)
-            VALUES (@NewProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
+            VALUES (@ProductDetailId, @YearManufactured, @SerialNumber, @Weight, @Storage);
 
             INSERT INTO Laptops (ProductDetailId, processor, ramMemory, longDescription)
             VALUES (@ProductDetailId, @Processor, @RamMemory, @LongDescription);
@@ -221,6 +226,7 @@ END;
 DROP TYPE IF EXISTS DistributeProductType;
 
 CREATE TYPE DistributeProductType AS TABLE(
+    ProductId BIGINT,
 	SellerId BIGINT,
 	Price DECIMAL(7,2)
 );
@@ -233,6 +239,8 @@ CREATE OR ALTER PROC CreateProductWithCompanies
     @DistributeProducts DistributeProductType READONLY
 AS
 BEGIN
+    SET NOCOUNT ON;
+
     UPDATE ProductsHeader
     SET produced=@ProduceId, store=@StoreId
     WHERE productId=@ProductId;
@@ -247,15 +255,24 @@ DROP TYPE IF EXISTS ProductWithCompaniesType;
 CREATE TYPE ProductWithCompaniesType AS TABLE(
     ProductId BIGINT,
     ProduceId BIGINT,
-    StoreId BIGINT,
-    DistributeProducts DistributeProductType  
+    StoreId BIGINT 
 );
 GO
 CREATE OR ALTER PROC CreateProductWithCompaniesBulk
-    @ProductsWithCompanies ProductWithCompaniesType
+    @ProductsWithCompanies ProductWithCompaniesType READONLY,
+    @DistributeProducts DistributeProductType READONLY
 AS
 BEGIN
-    
+    SET NOCOUNT ON;
+
+    UPDATE ProductsHeader
+    SET produced=pc.ProduceId, store=pc.StoreId
+    FROM @ProductsWithCompanies pc
+    WHERE ProductsHeader.productId=pc.ProductId;
+
+    INSERT INTO DistributeProducts (productId,sellerId,distributionPrice)
+    SELECT ProductId,SellerId,Price
+    FROM @DistributeProducts;
 END;
 
 

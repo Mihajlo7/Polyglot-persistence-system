@@ -36,8 +36,8 @@ CREATE TABLE ConsumerFriends (
 	friendshipLevel INT CONSTRAINT friendship_level_ck CHECK (friendshipLevel BETWEEN 1 AND 10),
 	establishedDate DATE DEFAULT GETDATE(),
 	CONSTRAINT consumer_friend_pk PRIMARY KEY (consumerId,friendId),
-	CONSTRAINT consumer_friend_fk FOREIGN KEY (consumerId) REFERENCES Consumers(id) ON DELETE CASCADE,
-	CONSTRAINT friend_consumer_fk FOREIGN KEY (friendId) REFERENCES Consumers(id) ON DELETE CASCADE
+	CONSTRAINT consumer_friend_fk FOREIGN KEY (consumerId) REFERENCES Consumers(id) ON DELETE NO ACTION,
+	CONSTRAINT friend_consumer_fk FOREIGN KEY (friendId) REFERENCES Consumers(id) ON DELETE NO ACTION
 );
 
 CREATE TABLE Administrators (
