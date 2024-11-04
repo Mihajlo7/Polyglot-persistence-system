@@ -2,21 +2,31 @@
 CREATE PROCEDURE CreateUser
     @Id BIGINT,
     @Email NVARCHAR(100),
-    @PasswordHash NVARCHAR(255),
-    @PasswordSalt VARBINARY(255),
+    @Password NVARCHAR(255),
     @FirstName NVARCHAR(255),
     @LastName NVARCHAR(255),
     @BirthDate DATE,
-    @Telephone VARCHAR(20)
+    @Telephone VARCHAR(20),
+    @CreditCard1Id BIGINT,
+    @CreditCardType1 NVARCHAR(20),
+	@CreditCardNumber1 NVARCHAR(50),
+    @CreditCard2Id BIGINT,
+	@CreditCardType2 NVARCHAR(20),
+	@CreditCardNumber2 NVARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
 
     INSERT INTO Users (id, email, passwordHash, passwordSalt)
-    VALUES (@Id, @Email, @PasswordHash, @PasswordSalt);
+    VALUES (@Id, @Email,  HASHBYTES('SHA2_256', @Password), CAST(@Password AS VARBINARY(255)));
 
     INSERT INTO Consumers (id, firstName, lastName, birthDate, telephone)
     VALUES (@Id, @FirstName, @LastName, @BirthDate, @Telephone);
+
+    INSERT INTO CreditCard (id,consumerId,cardType,number) VALUES(@CreditCard1Id, @Id, @CreditCardType1, @CreditCardNumber1);
+
+    IF @CreditCardType2 IS NOT NULL AND @CreditCardNumber2 IS NOT NULL
+		INSERT INTO CreditCard (id,consumerId,cardType,number) VALUES(@CreditCard2Id, @Id, @CreditCardType2, @CreditCardNumber2);
 END;
 
 DROP TYPE IF EXISTS UserConsumerType;
@@ -30,7 +40,13 @@ CREATE TYPE UserConsumerType AS TABLE
     FirstName NVARCHAR(255),
     LastName NVARCHAR(255),
     BirthDate DATE,
-    Telephone VARCHAR(20)
+    Telephone VARCHAR(20),
+    CreditCard1Id BIGINT,
+    CreditCardType1 NVARCHAR(20),
+	CreditCardNumber1 NVARCHAR(50),
+    CreditCard2Id BIGINT,
+	CreditCardType2 NVARCHAR(20),
+	CreditCardNumber2 NVARCHAR(50)
 );
 GO
 CREATE PROCEDURE CreateUsersBulk
@@ -47,6 +63,10 @@ BEGIN
     -- Umetanje u tabelu Consumers koristeći prosleđene Id vrednosti
     INSERT INTO Consumers (id, firstName, lastName, birthDate, telephone)
     SELECT Id, FirstName, LastName, BirthDate, Telephone
+    FROM @UserData;
+
+    INSERT INTO CreditCard (id,consumerId,number,cardType)
+    SELECT CreditCard1Id,Id,CreditCardNumber1,CreditCardType1
     FROM @UserData;
 END;
 
