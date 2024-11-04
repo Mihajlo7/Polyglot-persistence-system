@@ -30,6 +30,16 @@ CREATE TABLE Consumers (
 	CONSTRAINT consumer_fk FOREIGN KEY (Id) REFERENCES Users(Id) ON DELETE CASCADE
 )
 
+CREATE TABLE ConsumerFriends (
+	consumerId BIGINT,
+	friendId BIGINT,
+	friendshipLevel INT CONSTRAINT friendship_level_ck CHECK (friendshipLevel BETWEEN 1 AND 10),
+	establishedDate DATE DEFAULT GETDATE(),
+	CONSTRAINT consumer_friend_pk PRIMARY KEY (consumerId,friendId),
+	CONSTRAINT consumer_friend_fk FOREIGN KEY (consumerId) REFERENCES Consumers(id) ON DELETE CASCADE,
+	CONSTRAINT friend_consumer_fk FOREIGN KEY (friendId) REFERENCES Consumers(id) ON DELETE CASCADE
+);
+
 CREATE TABLE Administrators (
 	id BIGINT CONSTRAINT admin_pk PRIMARY KEY,
 	joinedDate DATE NOT NULL,
