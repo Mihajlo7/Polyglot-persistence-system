@@ -102,7 +102,7 @@ CREATE TABLE ProductsHeader (
 	name NVARCHAR(100) NOT NULL,
 	price DECIMAL(10,2) NOT NULL,
 	subCategoryId BIGINT CONSTRAINT product_fk FOREIGN KEY (subCategoryId) REFERENCES SubCategories(id) ON DELETE SET NULL ON UPDATE CASCADE,
-	produced BIGINT NOT NULL CONSTRAINT produced_seller_fk FOREIGN KEY (produced) REFERENCES Sellers(id),
+	produced BIGINT NULL CONSTRAINT produced_seller_fk FOREIGN KEY (produced) REFERENCES Sellers(id),
 	store BIGINT NULL CONSTRAINT store_seller_fk FOREIGN KEY (store) REFERENCES Sellers (id)
 );
 
