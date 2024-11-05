@@ -14,5 +14,6 @@ namespace Core.Models
         public string Telephone { get; set; }
         public List<CreditCardModel> CreditCards { get; set; }
         public List<OrderModel> Orders { get; set; }
+        public List<ConsumerFriendModel> Friends { get; set; }
     }
 }
