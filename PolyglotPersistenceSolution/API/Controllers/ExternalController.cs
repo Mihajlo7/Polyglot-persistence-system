@@ -24,10 +24,11 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllConsumers() 
         {
             
-            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",4);
-            ConsumerRepository consumerRepository = new();
-            int res= await consumerRepository.InsertConsumerBulk(result);
-            return Ok(res);
+            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",50);
+            //ConsumerRepository consumerRepository = new();
+            //int res= await consumerRepository.InsertConsumerBulk(result);
+            var consumers= ConsumerGeneratorServicecs.GenerateConsumers(result);
+            return Ok(consumers);
             
             //return Ok(await _consumerRepository.GetAllBySelect());
         }
@@ -43,18 +44,18 @@ namespace API.Controllers
         [HttpGet("cars")]
         public async Task<IActionResult> GetAllCars()
         {
-            var cars = await _httpClientFactoryService.ExecuteAsync<CarEx>("cars", 1);
-            CompanyRepository companyRepository = new();
-            var sellers= await companyRepository.GetAllSellersBySelect();
-            return Ok(ProductGeneratorService.GenerateProductsList(sellers,cars));
+            var cars = await _httpClientFactoryService.ExecuteAsync<CarEx>("cars", 40);
+            //CompanyRepository companyRepository = new();
+            //var sellers= await companyRepository.GetAllSellersBySelect();
+            return Ok(cars);
         }
         [HttpGet("mobiles")]
         public async Task<IActionResult> GetAllMobiles()
         {
-            var mobiles = await _httpClientFactoryService.ExecuteAsync<MobileEx>("mobiles", 3);
-            CompanyRepository companyRepository = new();
-            var sellers = await companyRepository.GetAllSellersBySelect();
-            return Ok(ProductGeneratorService.GenerateProductsList(sellers, mobiles));
+            var mobiles = await _httpClientFactoryService.ExecuteAsync<MobileEx>("mobiles", 60);
+            //CompanyRepository companyRepository = new();
+            //var sellers = await companyRepository.GetAllSellersBySelect();
+            return Ok(mobiles);
         }
 
         [HttpGet("couriers")]

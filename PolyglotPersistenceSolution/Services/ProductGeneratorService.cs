@@ -8,6 +8,7 @@ namespace Services
 {
     public static class ProductGeneratorService
     {
+        private const int PRODUCT_ID = 4_000_000;
         public static List<ProductModel> GenerateProductsList(List<SellerModel> sellers, IEnumerable<ProductAndDetailsEx> productsRaw)
         {
             List<ProductModel> products = new();
@@ -107,5 +108,10 @@ namespace Services
             }
             return products;
         }
-    }
+        public static List<ProductModel> ToMobilesFromRaws(List<MobileEx> mobileExList)
+        {
+            return null;
+        }
+
+    }   
 }

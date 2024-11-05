@@ -18,7 +18,7 @@ namespace API
                 config.BaseAddress = new Uri(baseUrl);
                 config.DefaultRequestHeaders.Add(headerKey, headerValue);
 
-                config.Timeout=new TimeSpan(0,5,0);
+                config.Timeout=new TimeSpan(0,30,0);
             });
 
             services.AddScoped<IHttpClientFactoryService, HttpClientFactoryService>();
