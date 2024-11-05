@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.ExternalData;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Services
 {
     public static class CompanyGeneratorService
     {
+        private const int COMPANY_ID = 3_000_000;
         public static List<ContractCourierModel> GenerateContractsForCourier(List<CourierModel> couriers, List<CompanyModel> companies)
         {
             List<ContractCourierModel> contracts = new List<ContractCourierModel>();
@@ -42,6 +44,49 @@ namespace Services
 
             }
             return contracts;
+        }
+
+        public static List<SellerModel> ToSellers(List<SellerEx> sellerRaws)
+        {
+            List<SellerModel> sellers= new List<SellerModel>();
+            int index = COMPANY_ID;
+
+            foreach(var sellerRaw in sellerRaws)
+            {
+                SellerModel seller = new();
+                seller.Id = index++;
+                seller.Name = sellerRaw.Name;
+                seller.DunsNumber = sellerRaw.DunsNumber;
+                seller.Telephone = sellerRaw.Telephone;
+                seller.Country= seller.Country;
+                seller.Address = sellerRaw.Address;
+                seller.City = sellerRaw.City;
+                seller.HasShop = sellerRaw.HasStore;
+
+                sellers.Add(seller);
+            }
+
+            return sellers;
+        }
+        public static List<CourierModel> ToCouriers(List<CourierEx> courierExes)
+        {
+            List<CourierModel> couriers = new();
+            int index = COMPANY_ID+100_000;
+
+            foreach(var courierEx in courierExes) 
+            {
+                CourierModel courier = new();
+                courier.Id = index++;
+                courier.Name = courierEx.Name;
+                courier.DunsNumber= courierEx.DunsNumber;
+                courier.Telephone = courierEx.Telephone;
+                courier.Country = courierEx.Country;
+                courier.DeliveryPrice = courierEx.DeliveryPrice;
+
+                couriers.Add(courier);
+            }
+
+            return couriers;
         }
     }
 }

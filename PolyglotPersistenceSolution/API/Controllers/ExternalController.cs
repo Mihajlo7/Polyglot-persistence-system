@@ -36,9 +36,9 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllSellers()
         {
             var sellers = await _httpClientFactoryService.ExecuteAsync<SellerEx>("sellers", 4);
-            CompanyRepository companyRepository = new();
-            int res= await companyRepository.InsertManySellers(sellers);
-            return Ok(res);
+            //CompanyRepository companyRepository = new();
+            //int res= await companyRepository.InsertManySellers(sellers);
+            return Ok(sellers);
         }
 
         [HttpGet("cars")]
