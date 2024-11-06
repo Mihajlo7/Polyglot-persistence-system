@@ -58,7 +58,7 @@ namespace Services
                 seller.Name = sellerRaw.Name;
                 seller.DunsNumber = sellerRaw.DunsNumber;
                 seller.Telephone = sellerRaw.Telephone;
-                seller.Country= seller.Country;
+                seller.Country= sellerRaw.Country;
                 seller.Address = sellerRaw.Address;
                 seller.City = sellerRaw.City;
                 seller.HasShop = sellerRaw.HasStore;

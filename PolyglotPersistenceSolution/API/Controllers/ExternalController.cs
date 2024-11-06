@@ -2,6 +2,7 @@
 using Core.ExternalData;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Setup;
 using SQLDataAccess;
 using SQLDataAccess.impl;
 
@@ -35,9 +36,20 @@ namespace API.Controllers
         [HttpGet("sellers")]
         public async Task<IActionResult> GetAllSellers()
         {
-            var sellers = await _httpClientFactoryService.ExecuteAsync<SellerEx>("sellers", 4);
+            var sellers = await _httpClientFactoryService.ExecuteAsync<SellerEx>("sellers", 50);
             //CompanyRepository companyRepository = new();
             //int res= await companyRepository.InsertManySellers(sellers);
+            return Ok(sellers);
+        }
+
+        [HttpGet("sellers2")]
+        public  IActionResult GetAllSellers2()
+        {
+            //var sellers = await _httpClientFactoryService.ExecuteAsync<SellerEx>("sellers", 50);
+            //CompanyRepository companyRepository = new();
+            //int res= await companyRepository.InsertManySellers(sellers);
+            DatabaseAndDataSetupService ddss = new("");
+            var sellers=ddss.GetAllSellers();
             return Ok(sellers);
         }
 
@@ -61,10 +73,10 @@ namespace API.Controllers
         [HttpGet("couriers")]
         public async Task<IActionResult> GetAllCouriers()
         {
-            var couriers = await _httpClientFactoryService.ExecuteAsync<CourierEx>("couriers", 1);
-            CompanyRepository companyRepository = new();
-            var res=await companyRepository.InsertManyCouriers(couriers);
-            return Ok(res);
+            var couriers = await _httpClientFactoryService.ExecuteAsync<CourierEx>("couriers", 50);
+            //CompanyRepository companyRepository = new();
+            //var res=await companyRepository.InsertManyCouriers(couriers);
+            return Ok(couriers);
         }
 
         [HttpGet("contracts")]
