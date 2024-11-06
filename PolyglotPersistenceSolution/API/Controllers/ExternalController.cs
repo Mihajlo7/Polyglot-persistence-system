@@ -91,6 +91,13 @@ namespace API.Controllers
             return Ok(results);
         }
 
+        [HttpGet("setup")]
+        public IActionResult SetupDatabase()
+        {
+            DatabaseAndDataSetupService setupService= new DatabaseAndDataSetupService("small_db");
+            setupService.SetupRelationDatabase();
+            return Ok("Uspeli smo");
+        }
         
     }
 }

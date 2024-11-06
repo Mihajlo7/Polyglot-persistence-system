@@ -1,4 +1,5 @@
-﻿CREATE OR ALTER PROCEDURE  CreateProduct
+﻿
+CREATE OR ALTER PROCEDURE  CreateProduct
     @ProductId BIGINT,
     @ProductDetailId BIGINT,
     @ProductName NVARCHAR(100),
@@ -139,8 +140,10 @@ BEGIN
 		END;
     INSERT INTO ProductsHeader (id,name,price,subCategoryId) VALUES (@ProductId,@ProductName,@ProductPrice,@SubCategoryId)
 END;
+GO
 
 DROP TYPE IF EXISTS ProductWithSubCategoryType;
+GO
 
 CREATE TYPE ProductWithSubCategoryType AS TABLE(
     ProductId BIGINT,
@@ -149,6 +152,7 @@ CREATE TYPE ProductWithSubCategoryType AS TABLE(
     SubCategoryName NVARCHAR(50)
 );
 GO
+
 CREATE OR ALTER PROC CreateProductWithSubCategoryBulk
     @ProductsWithSubcategory ProductWithSubCategoryType READONLY
 AS
@@ -159,8 +163,8 @@ BEGIN
     SELECT ProductId,ProductName,ProductPrice, (SELECT id FROM SubCategories WHERE name=SubCategoryName)
     FROM @ProductsWithSubcategory;
 END;
-
 GO
+
 CREATE OR ALTER PROC CreateProductWithDetail
     @ProductId BIGINT,
     @ProductDetailId BIGINT,
@@ -222,16 +226,18 @@ BEGIN
             VALUES (@ProductDetailId, @Processor, @RamMemory, @LongDescription);
         END
 END;
+GO
 
 DROP TYPE IF EXISTS DistributeProductType;
+GO
 
 CREATE TYPE DistributeProductType AS TABLE(
     ProductId BIGINT,
 	SellerId BIGINT,
 	Price DECIMAL(7,2)
 );
-
 GO
+
 CREATE OR ALTER PROC CreateProductWithCompanies
     @ProductId BIGINT,
     @ProduceId BIGINT,
@@ -249,8 +255,10 @@ BEGIN
     SELECT @ProductId,SellerId,Price
     FROM @DistributeProducts;
 END;
+GO
 
 DROP TYPE IF EXISTS ProductWithCompaniesType;
+GO
 
 CREATE TYPE ProductWithCompaniesType AS TABLE(
     ProductId BIGINT,
@@ -258,6 +266,7 @@ CREATE TYPE ProductWithCompaniesType AS TABLE(
     StoreId BIGINT 
 );
 GO
+
 CREATE OR ALTER PROC CreateProductWithCompaniesBulk
     @ProductsWithCompanies ProductWithCompaniesType READONLY,
     @DistributeProducts DistributeProductType READONLY
@@ -274,5 +283,6 @@ BEGIN
     SELECT ProductId,SellerId,Price
     FROM @DistributeProducts;
 END;
+GO
 
 
