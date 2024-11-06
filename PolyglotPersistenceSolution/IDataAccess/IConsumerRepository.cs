@@ -13,6 +13,9 @@ namespace IDataAccess
         public Task<int> InsertManyConsumer(List<ConsumerModel> consumers);
         public Task InsertOneFriend(ConsumerFriendModel consumerFriend);
         public Task<int> InsertManyFriend(List<ConsumerFriendModel> consumerFriends);
-        public Task<int> InsertManyFriendBulk(List<ConsumerFriendModel> consumerFriends);
+        public Task InsertManyFriendBulk(List<ConsumerFriendModel> consumerFriends);
+        public Task<bool> DeleteConsumerById(long consumerId);
+        public Task<bool> DeleteConsumers();
+        public Task<bool> DeleteConsumersFriends();
     }
 }

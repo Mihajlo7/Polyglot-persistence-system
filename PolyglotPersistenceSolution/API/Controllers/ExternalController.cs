@@ -13,25 +13,32 @@ namespace API.Controllers
     public class ExternalController : ControllerBase
     {
         private readonly IHttpClientFactoryService _httpClientFactoryService;
-        private readonly IConsumerRepository _consumerRepository;
+        //private readonly IConsumerRepository _consumerRepository;
 
-        public ExternalController(IHttpClientFactoryService httpClientFactoryService,IConsumerRepository consumerRepository)
+        public ExternalController(IHttpClientFactoryService httpClientFactoryService)
         {
             _httpClientFactoryService = httpClientFactoryService;
-            _consumerRepository = consumerRepository;
+            //_consumerRepository = consumerRepository;
         }
 
         [HttpGet("consumers")]
         public async Task<IActionResult> GetAllConsumers() 
         {
             
-            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",50);
+            var result = await _httpClientFactoryService.ExecuteAsync<ConsumerEx>("consumers",5);
             //ConsumerRepository consumerRepository = new();
             //int res= await consumerRepository.InsertConsumerBulk(result);
             var consumers= ConsumerGeneratorServicecs.GenerateConsumers(result);
             return Ok(consumers);
             
             //return Ok(await _consumerRepository.GetAllBySelect());
+        }
+        [HttpGet("consumersFriends")]
+        public IActionResult GetConsumers()
+        {
+            DatabaseAndDataSetupService ddss = new("");
+            var res = ddss.GetConsumerFriends();
+            return Ok(res);
         }
         [HttpGet("sellers")]
         public async Task<IActionResult> GetAllSellers()

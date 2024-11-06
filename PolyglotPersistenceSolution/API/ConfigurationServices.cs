@@ -1,7 +1,7 @@
 ﻿using API.JsonConverter;
 using API.Services;
-using SQLDataAccess;
-using SQLDataAccess.impl;
+using RelationDataAccess.Implementation;
+using IDataAccess;
 
 namespace API
 {
@@ -28,10 +28,12 @@ namespace API
 
         public static IServiceCollection ConfigureRepository(this IServiceCollection services)
         {
+            /*
             services.AddScoped<IConsumerRepository, ConsumerRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
-
+            */
+            services.AddScoped<IDataAccess.IConsumerRepository>(provider => new SqlConsumerRepository("small_db"));
             return services;
         }
 
