@@ -57,5 +57,141 @@ namespace RelationDataAccess.HelperSqlData
             command.Parameters.AddWithValue("@FriendsData",table);
             return command;
         }
+
+        public static List<ConsumerModel> GetConsumersFromReaderBadWay(this SqlDataReader reader) 
+        {
+            List<ConsumerModel> consumers = new();
+
+            while (reader.Read())
+            {
+                var consumerId = reader.GetInt64(0);
+
+                // Pronađi ili dodaj novog consumer-a u listu
+                var consumer = consumers.FirstOrDefault(c => c.Id == consumerId);
+                if (consumer == null)
+                {
+                    // Kreiraj novog consumer-a
+                    consumer = new ConsumerModel
+                    {
+                        Id = consumerId,
+                        Email = reader.GetString(1),
+                        FirstName = reader.GetString(5),
+                        LastName = reader.GetString(6),
+                        BirthDate = reader.GetDateTime(7),
+                        Telephone = reader.GetString(8),
+                        CreditCards = new List<CreditCardModel>(),
+                        Friends = new List<ConsumerFriendModel>()
+                    };
+                    consumers.Add(consumer);
+                }
+
+                // Dodaj kreditnu karticu ako ne postoji
+                var creditCardId = reader.GetInt64(9);
+                if (!consumer.CreditCards.Any(cc => cc.Id == creditCardId))
+                {
+                    consumer.CreditCards.Add(new CreditCardModel
+                    {
+                        Id = creditCardId,
+                        ConsumerId = reader.GetInt64(10),
+                        Number = reader.GetString(11),
+                        CardType = reader.GetString(12),
+                    });
+                }
+
+                // Dodaj prijatelja ako postoji u podacima i nije već dodat
+                if (!reader.IsDBNull(13))
+                {
+                    var friendId = reader.GetInt64(14);
+                    if (!consumer.Friends.Any(cf => cf.Friend.Id == friendId))
+                    {
+                        ConsumerFriendModel consumerFriend = new ConsumerFriendModel
+                        {
+                            Id = reader.GetInt64(13),
+                            FriendshipLevel = reader.GetInt32(15),
+                            EstablishedDate = DateOnly.FromDateTime(reader.GetDateTime(16)),
+                            Friend = new ConsumerModel
+                            {
+                                Id = friendId,
+                                Email = reader.GetString(18),
+                                FirstName = reader.GetString(19),
+                                LastName = reader.GetString(20),
+                                BirthDate = reader.GetDateTime(21),
+                                Telephone = reader.GetString(22)
+                            }
+                        };
+                        consumer.Friends.Add(consumerFriend);
+                    }
+                }
+            }
+            return consumers;
+        }
+
+        public static List<ConsumerModel> GetConsumersFromReader(this SqlDataReader reader)
+        {
+            List<ConsumerModel> consumers = new();
+
+            while (reader.Read())
+            {
+                var consumerId = reader.GetInt64("Id");
+
+                // Pronađi ili dodaj novog consumer-a u listu
+                var consumer = consumers.FirstOrDefault(c => c.Id == consumerId);
+                if (consumer == null)
+                {
+                    // Kreiraj novog consumer-a
+                    consumer = new ConsumerModel
+                    {
+                        Id = consumerId,
+                        Email = reader.GetString("Email"),
+                        FirstName = reader.GetString("FirstName"),
+                        LastName = reader.GetString("LastName"),
+                        BirthDate = reader.GetDateTime("BirthDate"),
+                        Telephone = reader.GetString("Telephone"),
+                        CreditCards = new List<CreditCardModel>(),
+                        Friends = new List<ConsumerFriendModel>()
+                    };
+                    consumers.Add(consumer);
+                }
+
+                // Dodaj kreditnu karticu ako ne postoji
+                var creditCardId = reader.GetInt64("CreditCardId");
+                if (!consumer.CreditCards.Any(cc => cc.Id == creditCardId))
+                {
+                    consumer.CreditCards.Add(new CreditCardModel
+                    {
+                        Id = creditCardId,
+                        ConsumerId = consumerId,
+                        Number = reader.GetString("CreditCardNumber"),
+                        CardType = reader.GetString("CreditCardType"),
+                    });
+                }
+
+                // Dodaj prijatelja ako postoji u podacima i nije već dodat
+                if (!reader.IsDBNull(reader.GetOrdinal("FriendId")))
+                {
+                    var friendId = reader.GetInt64("FriendId");
+                    if (!consumer.Friends.Any(cf => cf.Friend.Id == friendId))
+                    {
+                        ConsumerFriendModel consumerFriend = new ConsumerFriendModel
+                        {
+                            Id = consumerId,
+                            FriendshipLevel = reader.GetInt32("FriendshipLevel"),
+                            EstablishedDate = DateOnly.FromDateTime(reader.GetDateTime("FriendEstablishedDate")),
+                            Friend = new ConsumerModel
+                            {
+                                Id = friendId,
+                                Email = reader.GetString("friendEmail"),
+                                FirstName = reader.GetString("friendName"),
+                                LastName = reader.GetString("friendLastName"),
+                                BirthDate = reader.GetDateTime("FriendBirthDate"),
+                                Telephone = reader.GetString("FriendTelephone")
+                            }
+                        };
+                        consumer.Friends.Add(consumerFriend);
+                    }
+                }
+            }
+            return consumers;
+        }
     }
 }

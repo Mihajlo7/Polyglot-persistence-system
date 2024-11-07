@@ -75,5 +75,45 @@ namespace API.Controllers
                 return BadRequest("Something went wrong!");
             }
         }
+        [HttpGet("badway")]
+        public async Task<IActionResult> GetConsumers()
+        {
+            return Ok(await _consumerRepository.GetConsumers());
+        }
+
+        [HttpGet("optimised")]
+        public async Task<IActionResult> GetConsumersOpt()
+        {
+            return Ok(await _consumerRepository.GetConsumersOptimised());
+        }
+
+        [HttpGet("id/{id}")]
+        public async Task<IActionResult> GetConsumerById(long id)
+        {
+            return Ok( await _consumerRepository.GetConsumerById(id));
+        }
+
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> GetConsumerByEmail(string email)
+        {
+            return Ok(await _consumerRepository.GetConsumerByEmail(email));
+        }
+
+        [HttpGet("friends/email/{email}")]
+        public async Task<IActionResult> GetConsumerByFriendEmail(string email)
+        {
+            return Ok(await _consumerRepository.GetConsumersByFriendEmail(email));
+        }
+        [HttpPost("friend/email/level")]
+        public async Task<IActionResult> GetConsumerByEmailAndFriendshipLevel([FromBody] FriendLevel friendLevel)
+        {
+            return Ok(await _consumerRepository.GetConsumersByEmailAndFriendshipLevel(friendLevel.email,friendLevel.level));
+        }
+    }
+
+    public class FriendLevel
+    {
+        public string email { get; set; }
+        public int level { get; set; }
     }
 }

@@ -2,7 +2,9 @@
 using IDataAccess;
 using Microsoft.Data.SqlClient;
 using RelationDataAccess.HelperSqlData;
+using RelationDataAccess.Resources;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,6 +52,87 @@ namespace RelationDataAccess.Implementation
             int rowsAffected = await command.ExecuteNonQueryAsync();
 
             return rowsAffected > 0;
+        }
+
+        public async Task<ConsumerModel> GetConsumerByEmail(string email)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.GetByEmail, connection);
+            command.Parameters.AddWithValue("@Email", email);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var consumer = reader.GetConsumersFromReader().First();
+
+            return consumer;
+        }
+
+        public async Task<ConsumerModel> GetConsumerById(long id)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.GetById, connection);
+            command.Parameters.AddWithValue("@Id", id);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var consumer=reader.GetConsumersFromReader().First();
+
+            return consumer;
+        }
+
+        public async Task<List<ConsumerModel>> GetConsumers()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.JoinPlain, connection);
+            command.CommandTimeout = 120;
+
+            connection.Open();
+            using var reader= await command.ExecuteReaderAsync();
+
+            var consumers=reader.GetConsumersFromReaderBadWay();
+
+            return consumers;
+        }
+
+        public async Task<List<ConsumerModel>> GetConsumersByEmailAndFriendshipLevel(string email, int level)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.GetConsumersByEmailAndFriendshipLevel, connection);
+            command.Parameters.AddWithValue("@Email", email);
+            command.Parameters.AddWithValue("@FriendshipLevel",level);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var consumers = reader.GetConsumersFromReader();
+            return consumers;
+        }
+
+        public async Task<List<ConsumerModel>> GetConsumersByFriendEmail(string friendEmail)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.GetConsumerByFriendEmail, connection);
+            command.Parameters.AddWithValue("@Email", friendEmail);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var consumers= reader.GetConsumersFromReader();
+            return consumers;
+
+        }
+
+        public async Task<List<ConsumerModel>> GetConsumersOptimised()
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(ConsumerQueries.JoinWithNames, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var consumers = reader.GetConsumersFromReader();
+
+            return consumers;
         }
 
         public async Task<int> InsertManyConsumer(List<ConsumerModel> consumers)

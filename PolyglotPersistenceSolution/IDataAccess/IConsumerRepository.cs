@@ -17,5 +17,13 @@ namespace IDataAccess
         public Task<bool> DeleteConsumerById(long consumerId);
         public Task<bool> DeleteConsumers();
         public Task<bool> DeleteConsumersFriends();
+
+        public Task<List<ConsumerModel>> GetConsumers();
+        public Task<List<ConsumerModel>> GetConsumersOptimised();
+
+        public Task<ConsumerModel> GetConsumerById(long id);
+        public Task<ConsumerModel> GetConsumerByEmail(string email);
+        public Task<List<ConsumerModel>> GetConsumersByFriendEmail(string friendEmail);
+        public Task<List<ConsumerModel>> GetConsumersByEmailAndFriendshipLevel(string email, int level);
     }
 }
