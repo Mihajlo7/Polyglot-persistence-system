@@ -34,7 +34,7 @@ namespace API
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             */
-            services.AddScoped<IDataAccess.IConsumerRepository>(provider => new SqlConsumerRepository("large_db"));
+            services.AddScoped<IDataAccess.IConsumerRepository>(provider => new HybridConsumerRepository("hybrid_small_db"));
             return services;
         }
 

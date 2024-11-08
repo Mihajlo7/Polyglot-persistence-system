@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.ExternalData;
+using Core.Models;
 using HybridDataAccess.HelperSqlData;
 using IDataAccess;
 using Microsoft.Data.SqlClient;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HybridDataAccess.Implementation
@@ -61,34 +63,100 @@ namespace HybridDataAccess.Implementation
             return res > 0;
         }
 
-        public Task<ConsumerModel> GetConsumerByEmail(string email)
+        public async Task<ConsumerModel> GetConsumerByEmail(string email)
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone, c.friends Friends " +
+                "\r\n  FROM Users u INNER JOIN Consumers c ON (u.id=c.id)" +
+                "WHERE u.email=@Email";
+
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Email", email);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var res = reader.GetConsumers();
+
+            return res.First();
         }
 
-        public Task<ConsumerModel> GetConsumerById(long id)
+        public async Task<ConsumerModel> GetConsumerById(long id)
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone, c.friends Friends " +
+                "\r\n  FROM Users u INNER JOIN Consumers c ON (u.id=c.id)" +
+                "WHERE u.id=@Id";
+
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Id",id);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var res = reader.GetConsumers();
+
+            return res.First();
         }
 
-        public Task<List<ConsumerModel>> GetConsumers()
+        public async Task<List<ConsumerModel>> GetConsumers()
         {
-            throw new NotImplementedException();
+            string query = "SELECT * \r\n  FROM Users u INNER JOIN Consumers c ON (u.id=c.id)";
+
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader= await command.ExecuteReaderAsync();
+
+            var res=reader.GetConsumersBadWay();
+
+            return res;
         }
 
-        public Task<List<ConsumerModel>> GetConsumersByEmailAndFriendshipLevel(string email, int level)
+        public async Task<List<ConsumerModel>> GetConsumersByEmailAndFriendshipLevel(string email, int level)
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone, c.friends,f.FriendshipLevel\r\nFROM Users u INNER JOIN Consumers c ON (u.id=c.id)\r\nCROSS APPLY OPENJSON(c.friends) WITH(\r\n\t--Friend NVARCHAR(MAX) AS JSON\r\n\tFriendshipLevel INT '$.FriendshipLevel'\r\n\t) as f\r\nWHERE u.email=@Email AND f.FriendshipLevel>@FriendshipLevel;";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query,connection);
+
+            command.Parameters.AddWithValue("@Email", email);
+            command.Parameters.AddWithValue("@FriendshipLevel",level);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var res= reader.GetConsumers();
+
+            return res;
         }
 
-        public Task<List<ConsumerModel>> GetConsumersByFriendEmail(string friendEmail)
+        public async Task<List<ConsumerModel>> GetConsumersByFriendEmail(string friendEmail)
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone ,c.friends Friends\r\nFROM Users u INNER JOIN Consumers c ON (u.id=c.id)\r\nCROSS APPLY OPENJSON(c.friends) WITH(\r\n\t--Friend NVARCHAR(MAX) AS JSON\r\n\tfriendEmail NVARCHAR(50) '$.Friend.Email'\r\n\t) as f\r\nWHERE f.friendEmail=@FriendEmail;";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FriendEmail",friendEmail);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+            var res = reader.GetConsumers();
+            return res;
         }
 
-        public Task<List<ConsumerModel>> GetConsumersOptimised()
+        public async Task<List<ConsumerModel>> GetConsumersOptimised()
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone, c.friends Friends \r\n  FROM Users u INNER JOIN Consumers c ON (u.id=c.id)";
+            
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var res = reader.GetConsumers();
+
+            return res;
         }
 
         public async Task<int> InsertManyConsumer(List<ConsumerModel> consumers)
@@ -129,17 +197,14 @@ namespace HybridDataAccess.Implementation
         public async Task InsertManyFriendBulk(List<ConsumerModel> consumerFriends)
         {
             using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("CreateFriendsJson", connection);
+            using var command = new SqlCommand("CreateFriendsJsonBulk", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
 
-            foreach (var consumer in consumerFriends) 
-            {
-                command.CreateConsumerFriendCommand(consumer);
-                await command.ExecuteNonQueryAsync();
-                
-            }
+            command.CreateConsumerFriendsCommandBulk(consumerFriends);
+
+            await command.ExecuteNonQueryAsync();
         }
 
         public async Task InsertOneConsumer(ConsumerModel consumer)
@@ -166,19 +231,90 @@ namespace HybridDataAccess.Implementation
             await command.ExecuteNonQueryAsync();
         }
 
-        public Task UpdateConsumersByName(string name)
+        public async Task UpdateConsumersByName(string name,int level)
         {
-            throw new NotImplementedException();
+            string query = "SELECT u.id Id, u.email Email, c.firstName Firstname, c.lastName Lastname, c.birthDate BirthDate, c.telephone Telephone, c.friends Friends " +
+                "\r\n  FROM Users u INNER JOIN Consumers c ON (u.id=c.id)" +
+                "WHERE c.firstname=@name";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            connection.Open();
+            using var reader = await command.ExecuteReaderAsync();
+
+            var res = reader.GetConsumers();
+
+            foreach (var consumer in res) 
+            {
+                await UpdateConsumersFriendshipById(consumer.Id, level);
+            }
+
         }
 
-        public Task UpdateConsumerTelephoneByEmail(string email, string telephone)
+        public async Task UpdateConsumersFriendshipById(long id, int level)
         {
-            throw new NotImplementedException();
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand("UpdateFriendshipLevelByConsumerId", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@ConsumerId", id);
+            command.Parameters.AddWithValue("@FriendshipLevel", level);
+
+            await command.ExecuteNonQueryAsync();
         }
 
-        public Task UpdateConsumerTelephoneById(long consumerId, string telephone)
+        public async Task UpdateConsumerTelephoneByEmail(string email, string telephone)
         {
-            throw new NotImplementedException();
+            string queryFriends = "WITH cte AS(" +
+                "\r\n\tSELECT *\r\n\tFROM Consumers CROSS APPLY " +
+                "\r\n\tOPENJSON(friends) f" +
+                "\r\n\tWHERE JSON_VALUE(f.value,'$.Friend.Email')=@email\r\n)\r\n" +
+                "UPDATE cte" +
+                "\r\nSET friends = JSON_MODIFY(friends,'$['+ cte.[key]+ '].Friend.Telephone',@telephone)";
+
+            string queryConsumer = "UPDATE Consumers SET telephone=@telephone WHERE id =(SELECT id FROM Users WHERE email=@email)";
+            
+            using var connection = new SqlConnection(_connectionString);
+            using var commandFriends = new SqlCommand(queryFriends, connection);
+            using var commandConsumer = new SqlCommand(queryConsumer, connection);
+
+            commandFriends.Parameters.AddWithValue("@email",email);
+            commandFriends.Parameters.AddWithValue("@telephone", telephone);
+
+            commandConsumer.Parameters.AddWithValue("@email", email);
+            commandConsumer.Parameters.AddWithValue("@telephone", telephone);
+
+            connection.Open();
+
+            await commandFriends.ExecuteNonQueryAsync();
+            await commandConsumer.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateConsumerTelephoneById(long consumerId, string telephone)
+        {
+            string queryFriends = "WITH cte AS(" +
+                "\r\n\tSELECT *\r\n\tFROM Consumers CROSS APPLY " +
+                "\r\n\tOPENJSON(friends) f" +
+                "\r\n\tWHERE JSON_VALUE(f.value,'$.Friend.Id')=@id\r\n)\r\n" +
+                "UPDATE cte" +
+                "\r\nSET friends = JSON_MODIFY(friends,'$['+ cte.[key]+ '].Friend.Telephone',@telephone)";
+
+            string queryConsumer = "UPDATE Consumers SET telephone=@telephone WHERE id =@id";
+
+            using var connection = new SqlConnection(_connectionString);
+            using var commandFriends = new SqlCommand(queryFriends, connection);
+            using var commandConsumer = new SqlCommand(queryConsumer, connection);
+
+            commandFriends.Parameters.AddWithValue("@id", consumerId);
+            commandFriends.Parameters.AddWithValue("@telephone", telephone);
+
+            commandConsumer.Parameters.AddWithValue("@id", consumerId);
+            commandConsumer.Parameters.AddWithValue("@telephone", telephone);
+
+            connection.Open();
+
+            await commandFriends.ExecuteNonQueryAsync();
+            await commandConsumer.ExecuteNonQueryAsync();
         }
     }
 }

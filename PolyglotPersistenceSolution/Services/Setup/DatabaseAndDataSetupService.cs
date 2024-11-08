@@ -39,8 +39,8 @@ namespace Services.Setup
         }
         public List<ConsumerFriendModel> GetConsumerFriends(int a,int b,List<ConsumerModel> consumers)
         {
-            //var consumers = _jsonWorker.ReadObjectsFromFile<ConsumerModel>("ConsumersReady.json");
-            var consumersFriendShip = consumers.GenerateConsumerFriends(a,b);
+            var consumers1 = _jsonWorker.ReadObjectsFromFile<ConsumerModel>("ConsumersReady.json");
+            var consumersFriendShip = consumers1.GenerateConsumerFriends(a,b);
             return consumersFriendShip;
         }
 

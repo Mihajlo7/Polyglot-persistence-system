@@ -224,15 +224,30 @@ namespace RelationDataAccess.Implementation
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task UpdateConsumersByName(string name)
+        public async Task UpdateConsumersByName(string name, int level)
         {
             string query = "UPDATE ConsumerFriends " +
-                "SET friendshipLevel=friendshipLevel+1 " +
+                "SET friendshipLevel=@level " +
                 "WHERE consumerId= IN (SELECT id FROM Consumers WHERE firstname=@name)";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
             command.Parameters.AddWithValue("@name", name);
+            command.Parameters.AddWithValue("@level", level);
+            connection.Open();
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateConsumersFriendshipById(long id, int level)
+        {
+            string query = "UPDATE ConsumerFriends " +
+                "SET friendshipLevel=@level " +
+                "WHERE consumerId= @id";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@level", level);
             connection.Open();
             await command.ExecuteNonQueryAsync();
         }
@@ -258,6 +273,7 @@ namespace RelationDataAccess.Implementation
             command.Parameters.AddWithValue("@telephone", telephone);
             command.Parameters.AddWithValue("@consumerId", consumerId);
             connection.Open();
+            
             await command.ExecuteNonQueryAsync();
         }
     }

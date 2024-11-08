@@ -37,7 +37,7 @@ namespace API.Controllers
         public IActionResult GetConsumers(int num)
         {
             DatabaseAndDataSetupService ddss = new("");
-            var res = ddss.GetConsumerFriends(50,1000,null);
+            var res = ddss.GetConsumerFriends(20,250,null);
             if (num == 1)
             {
                 return Ok(res.ToConsumersFromConsumersFriends().First());

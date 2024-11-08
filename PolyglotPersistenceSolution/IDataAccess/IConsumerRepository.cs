@@ -28,6 +28,7 @@ namespace IDataAccess
 
         public Task UpdateConsumerTelephoneById(long consumerId, string telephone);
         public Task UpdateConsumerTelephoneByEmail(string email, string telephone);
-        public Task UpdateConsumersByName(string name);
+        public Task UpdateConsumersByName(string name,int level);
+        public Task UpdateConsumersFriendshipById(long id, int level);
     }
 }

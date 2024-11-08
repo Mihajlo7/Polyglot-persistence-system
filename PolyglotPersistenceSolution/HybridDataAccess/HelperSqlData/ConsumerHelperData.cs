@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -39,5 +40,71 @@ namespace HybridDataAccess.HelperSqlData
 
             return command;
         }
+
+        public static SqlCommand CreateConsumerFriendsCommandBulk(this SqlCommand command,List<ConsumerModel> consumers)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("ConsumerId",typeof(long));
+            dataTable.Columns.Add("FriendsData", typeof(string));
+            foreach (ConsumerModel consumer in consumers) 
+            {
+                dataTable.Rows.Add(consumer.Id,JsonSerializer.Serialize(consumer.Friends));
+            }
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@FriendsDataType",dataTable);
+            return command;
+        }
+
+        public static List<ConsumerModel> GetConsumersBadWay(this SqlDataReader reader)
+        {
+            List<ConsumerModel> consumers = new List<ConsumerModel>();
+
+            while (reader.Read()) 
+            {
+                ConsumerModel consumer = new ConsumerModel()
+                {
+                    Id = reader.GetInt64(0),
+                    Email = reader.GetString(1),
+                    //2
+                    //3
+                    FirstName = reader.GetString(4),
+                    LastName = reader.GetString(5),
+                    BirthDate= reader.GetDateTime(6),
+                    Telephone = reader.GetString(7),
+                    Friends= JsonSerializer.Deserialize<List<ConsumerFriendModel>>(reader.GetString(8))
+                };
+
+                consumers.Add(consumer);
+            }
+
+            return consumers;
+        }
+
+        public static List<ConsumerModel> GetConsumers(this SqlDataReader reader)
+        {
+            List<ConsumerModel> consumers = new List<ConsumerModel>();
+
+            while (reader.Read())
+            {
+                ConsumerModel consumer = new ConsumerModel()
+                {
+                    Id = reader.GetInt64("Id"),
+                    Email = reader.GetString("Email"),
+                    //2
+                    //3
+                    FirstName = reader.GetString("FirstName"),
+                    LastName = reader.GetString("LastName"),
+                    BirthDate = reader.GetDateTime("BirthDate"),
+                    Telephone = reader.GetString("Telephone"),
+                    Friends = JsonSerializer.Deserialize<List<ConsumerFriendModel>>(reader.GetString("Friends"))
+                };
+
+                consumers.Add(consumer);
+            }
+
+            return consumers;
+        }
+
+        
     }
 }
