@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IDataAccess", "IDataAccess\IDataAccess.csproj", "{1EFDCA09-D9D1-4496-B3EF-86B5B3C8D5D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationDataAccess", "RelationDataAccess\RelationDataAccess.csproj", "{E246A005-AC77-4E4C-BDD0-58AA5BD5BDFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RelationDataAccess", "RelationDataAccess\RelationDataAccess.csproj", "{E246A005-AC77-4E4C-BDD0-58AA5BD5BDFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridDataAccess", "HybridDataAccess\HybridDataAccess.csproj", "{093A3AFA-CB81-4AED-9873-19114C0C8CDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{E246A005-AC77-4E4C-BDD0-58AA5BD5BDFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E246A005-AC77-4E4C-BDD0-58AA5BD5BDFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E246A005-AC77-4E4C-BDD0-58AA5BD5BDFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093A3AFA-CB81-4AED-9873-19114C0C8CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093A3AFA-CB81-4AED-9873-19114C0C8CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093A3AFA-CB81-4AED-9873-19114C0C8CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093A3AFA-CB81-4AED-9873-19114C0C8CDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

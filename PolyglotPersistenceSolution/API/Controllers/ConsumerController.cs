@@ -42,21 +42,21 @@ namespace API.Controllers
         }
 
         [HttpPost("friends/insert")]
-        public async Task<IActionResult> InsertConsumerFriend([FromBody]ConsumerFriendModel consumerFriend) 
+        public async Task<IActionResult> InsertConsumerFriend([FromBody]ConsumerModel consumerFriend) 
         {
             await _consumerRepository.InsertOneFriend(consumerFriend);
             return Ok("Inserted consumer Friends");
         }
 
         [HttpPost("friends/insertMany")]
-        public async Task<IActionResult> InsertConsumerFriends([FromBody]List<ConsumerFriendModel> consumerFriends)
+        public async Task<IActionResult> InsertConsumerFriends([FromBody]List<ConsumerModel> consumerFriends)
         {
             int count= await _consumerRepository.InsertManyFriend(consumerFriends);
             return Ok($"Inserted {count} consumer Friends");
         }
 
         [HttpPost("friends/insertBulk")]
-        public async Task<IActionResult> InsertConsumerFriendsBulk([FromBody] List<ConsumerFriendModel> consumerFriends)
+        public async Task<IActionResult> InsertConsumerFriendsBulk([FromBody] List<ConsumerModel> consumerFriends)
         {
             await _consumerRepository.InsertManyFriendBulk(consumerFriends);
             return Ok($"Inserted consumer Friends Bulk");

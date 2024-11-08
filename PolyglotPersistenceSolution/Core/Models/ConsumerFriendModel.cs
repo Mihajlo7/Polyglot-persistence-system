@@ -8,6 +8,7 @@ namespace Core.Models
 {
     public class ConsumerFriendModel
     {
+
         public long Id { get; set; }
         public ConsumerModel? Friend { get; set; }
         public int FriendshipLevel { get; set; }

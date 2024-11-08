@@ -37,10 +37,10 @@ namespace Services.Setup
             var sellers= CompanyGeneratorService.ToSellers(sellersRaw);
             return sellers;
         }
-        public List<ConsumerFriendModel> GetConsumerFriends()
+        public List<ConsumerFriendModel> GetConsumerFriends(int a,int b,List<ConsumerModel> consumers)
         {
-            var consumers = _jsonWorker.ReadObjectsFromFile<ConsumerModel>("ConsumersReady.json");
-            var consumersFriendShip = consumers.GenerateConsumerFriends(20,250);
+            //var consumers = _jsonWorker.ReadObjectsFromFile<ConsumerModel>("ConsumersReady.json");
+            var consumersFriendShip = consumers.GenerateConsumerFriends(a,b);
             return consumersFriendShip;
         }
 

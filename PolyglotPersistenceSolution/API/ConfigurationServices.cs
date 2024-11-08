@@ -2,6 +2,7 @@
 using API.Services;
 using RelationDataAccess.Implementation;
 using IDataAccess;
+using HybridDataAccess.Implementation;
 
 namespace API
 {
@@ -33,7 +34,7 @@ namespace API
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             */
-            services.AddScoped<IDataAccess.IConsumerRepository>(provider => new SqlConsumerRepository("small_db"));
+            services.AddScoped<IDataAccess.IConsumerRepository>(provider => new SqlConsumerRepository("large_db"));
             return services;
         }
 

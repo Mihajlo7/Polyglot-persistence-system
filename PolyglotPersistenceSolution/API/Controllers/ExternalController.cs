@@ -33,12 +33,20 @@ namespace API.Controllers
             
             //return Ok(await _consumerRepository.GetAllBySelect());
         }
-        [HttpGet("consumersFriends")]
-        public IActionResult GetConsumers()
+        [HttpGet("consumersFriends/{num}")]
+        public IActionResult GetConsumers(int num)
         {
             DatabaseAndDataSetupService ddss = new("");
-            var res = ddss.GetConsumerFriends();
-            return Ok(res);
+            var res = ddss.GetConsumerFriends(50,1000,null);
+            if (num == 1)
+            {
+                return Ok(res.ToConsumersFromConsumersFriends().First());
+            }
+            else
+            {
+                return Ok(res.ToConsumersFromConsumersFriends());
+            }
+            
         }
         [HttpGet("sellers")]
         public async Task<IActionResult> GetAllSellers()

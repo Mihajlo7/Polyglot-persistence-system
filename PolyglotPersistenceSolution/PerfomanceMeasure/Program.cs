@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
+using PerfomanceMeasure.Consumer.Insert;
 
 namespace PerfomanceMeasure
 {
@@ -6,7 +7,7 @@ namespace PerfomanceMeasure
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<ProductReadBench>();
+            BenchmarkRunner.Run<InsertConsumerBenchMark>();
         }
     }
 }

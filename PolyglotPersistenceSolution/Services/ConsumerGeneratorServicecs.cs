@@ -110,5 +110,28 @@ namespace Services
             }
             return consumerFriends;
         }
+
+        public static List<ConsumerModel> ToConsumersFromConsumersFriends(this List<ConsumerFriendModel> consumerFriends)
+        {
+            List<ConsumerModel> consumers = new List<ConsumerModel>();
+
+            foreach (ConsumerFriendModel consumerFriend in consumerFriends)
+            {
+                var consumer = consumers.FirstOrDefault(c=>c.Id==consumerFriend.Id);
+                if (consumer == null)
+                {
+                    consumer = new ConsumerModel();
+                    consumer.Id = consumerFriend.Id;
+                    consumer.Friends = new List<ConsumerFriendModel> { consumerFriend };
+                    consumers.Add(consumer);
+                }
+                else
+                {
+                    consumer.Friends.Add(consumerFriend);
+                }
+            }
+
+            return consumers;
+        }
     }
 }

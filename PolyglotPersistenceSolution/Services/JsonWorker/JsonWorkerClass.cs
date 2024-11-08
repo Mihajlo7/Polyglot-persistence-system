@@ -30,5 +30,16 @@ namespace Services.JsonWorker
             List<T> objects= JsonSerializer.Deserialize<List<T>>(json,_options);
             return objects;
         }
+
+        public List<T> DeserializeObjects<T>(string json)
+        {
+            List<T> objects = JsonSerializer.Deserialize<List<T>>(json);
+            return objects;
+        }
+
+        public string SerializeObjects<T>(List<T> values)
+        {
+            return JsonSerializer.Serialize(values);
+        }
     }
 }

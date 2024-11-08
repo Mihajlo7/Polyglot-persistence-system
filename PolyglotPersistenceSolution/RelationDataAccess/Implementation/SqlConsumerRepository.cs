@@ -153,15 +153,23 @@ namespace RelationDataAccess.Implementation
             return count;
         }
 
-        public async Task<int> InsertManyFriend(List<ConsumerFriendModel> consumerFriends)
+        public async Task<int> InsertManyFriend(List<ConsumerModel> consumerFriends)
         {
+            List<ConsumerFriendModel> consumersModels = new List<ConsumerFriendModel>();
+            foreach(var consumer in consumerFriends)
+            {
+                if (consumer.Friends != null)
+                {
+                    consumersModels.AddRange(consumer.Friends);
+                }
+            }
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand("CreateConsumerFriends", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
             int count = 0;
-            foreach (var consumerFriend in consumerFriends)
+            foreach (var consumerFriend in consumersModels)
             {
                 command.CreateConsumerFriendCommand(consumerFriend);
                 await command.ExecuteNonQueryAsync();
@@ -171,14 +179,22 @@ namespace RelationDataAccess.Implementation
             return count;
         }
 
-        public async Task InsertManyFriendBulk(List<ConsumerFriendModel> consumerFriends)
+        public async Task InsertManyFriendBulk(List<ConsumerModel> consumerFriends)
         {
+            List<ConsumerFriendModel> consumersModels = new List<ConsumerFriendModel>();
+            foreach (var consumer in consumerFriends)
+            {
+                if (consumer.Friends != null)
+                {
+                    consumersModels.AddRange(consumer.Friends);
+                }
+            }
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand("CreateConsumerFriendsBulk", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
-            command.CreateConsumerFriendBulkCommand(consumerFriends);
+            command.CreateConsumerFriendBulkCommand(consumersModels);
 
             await command.ExecuteNonQueryAsync();
             
@@ -196,15 +212,52 @@ namespace RelationDataAccess.Implementation
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task InsertOneFriend(ConsumerFriendModel consumerFriend)
+        public async Task InsertOneFriend(ConsumerModel consumerFriend)
         {
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand("CreateConsumerFriends", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
-            command.CreateConsumerFriendCommand(consumerFriend);
+            command.CreateConsumerFriendCommand(consumerFriend.Friends.First());
 
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateConsumersByName(string name)
+        {
+            string query = "UPDATE ConsumerFriends " +
+                "SET friendshipLevel=friendshipLevel+1 " +
+                "WHERE consumerId= IN (SELECT id FROM Consumers WHERE firstname=@name)";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@name", name);
+            connection.Open();
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateConsumerTelephoneByEmail(string email, string telephone)
+        {
+            string query = "UPDATE Consumers= SET telephone=@telephone WHERE email=@email";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@telephone", telephone);
+            command.Parameters.AddWithValue("@email",email);
+            connection.Open();
+            await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateConsumerTelephoneById(long consumerId, string telephone)
+        {
+            string query = "UPDATE Consumers= SET telephone=@telephone WHERE id=@consumerId";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@telephone", telephone);
+            command.Parameters.AddWithValue("@consumerId", consumerId);
+            connection.Open();
             await command.ExecuteNonQueryAsync();
         }
     }
