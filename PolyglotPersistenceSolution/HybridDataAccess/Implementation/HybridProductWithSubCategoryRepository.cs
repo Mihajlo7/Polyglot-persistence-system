@@ -43,10 +43,11 @@ namespace HybridDataAccess.Implementation
 
         public async Task<bool> DeleteProductBySubCategoryId(long subCategoryId)
         {
-            string query = "UPDATE SubCategories SET products=NULL;";
+            string query = "UPDATE SubCategories SET products=NULL WHERE id=@SubCategoryId;";
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@SubCategoryId",subCategoryId);
 
             connection.Open();
             int res = await command.ExecuteNonQueryAsync();
@@ -151,9 +152,10 @@ namespace HybridDataAccess.Implementation
             int count = 0;
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
+            connection.Open();
             foreach (var product in products)
             {
-                connection.Open();
+                
                 command.Parameters.Clear();
                 command.Parameters.AddWithValue("@Product", JsonSerializer.Serialize(product));
                 command.Parameters.AddWithValue("@SubCategoryId", product.Id);
@@ -172,6 +174,7 @@ namespace HybridDataAccess.Implementation
 
         public async Task InsertManyBulkOpt(List<SubCategoryModel> subCategories)
         {
+
             string query = "UPDATE SubCategories SET products=@Products WHERE id=@SubCategoryId";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
@@ -181,6 +184,8 @@ namespace HybridDataAccess.Implementation
                 command.Parameters.Clear();
                 command.Parameters.AddWithValue("@Products", JsonSerializer.Serialize(subCategory.Products));
                 command.Parameters.AddWithValue("@SubCategoryId", subCategory.Id);
+
+                await command.ExecuteNonQueryAsync();
 
             }
 

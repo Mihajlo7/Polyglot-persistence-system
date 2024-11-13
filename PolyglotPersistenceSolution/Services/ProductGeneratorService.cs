@@ -108,10 +108,95 @@ namespace Services
             }
             return products;
         }
-        public static List<ProductModel> ToMobilesFromRaws(List<MobileEx> mobileExList)
+        public static List<ProductModel> ToMobilesFromRaws(this List<MobileEx> mobileExList, int indexProd, int indexDetail, int length)
         {
-            return null;
+            List<ProductModel> products = new List<ProductModel>();
+
+            for (int i = 0; i < length; i++)
+            {
+                ProductModel product = new ProductModel();
+                product.Id = indexProd++;
+                product.Name = mobileExList[i].Name;
+                product.Price = mobileExList[i].Price;
+                product.Details = new MobileDetailsModel()
+                {
+                    Id = indexDetail++,
+                    ProductId = product.Id,
+                    ShortDescription = mobileExList[i].ShortDescription,
+                    ImageUrl = mobileExList[i].ImageUrl,
+                    YearManufactured = mobileExList[i].YearManifactured,
+                    SerialNumber = mobileExList[i].SerialNumber,
+                    Weight = $"{mobileExList[i].Weight} g",
+                    Storage = $"{mobileExList[i].Storage} gb",
+                    ScreenDiagonal = $"{mobileExList[i].ScreenDiagonal} in",
+                    OperatingSystem = mobileExList[i].OperatingSystem,
+                    Color = mobileExList[i].Color,
+                };
+                product.SubCategory = new SubCategoryModel()
+                {
+                    Name = mobileExList[i].SubCategory,
+                    Category = new CategoryModel() { Name = "Mobile" }
+                };
+                products.Add(product);
+            }
+            return products;
+        }
+        public static List<ProductModel> ToCarsFromRaws(this List<CarEx> carExList, int indexProd, int indexDetail, int length)
+        {
+            List<ProductModel> products = new List<ProductModel>();
+            for (int i = 0; i < length; i++)
+            {
+                ProductModel product = new ProductModel();
+                product.Id = indexProd++;
+                product.Name = carExList[i].Name;
+                product.Price = carExList[i].Price;
+                product.Details = new CarDetailsModel()
+                {
+                    Id = indexDetail++,
+                    ProductId = product.Id,
+                    ShortDescription = carExList[i].ShortDescription,
+                    ImageUrl = carExList[i].ImageUrl,
+                    YearManufactured = carExList[i].Year,
+                    Model = carExList[i].SubCategory,
+                    SerialNumber = carExList[i].SerialNumber,
+                    EngineDisplacement = $"{carExList[i].EngineDisplacement} cm3",
+                    EnginePower = $"{carExList[i].EnginePower} ph",
+                    LongDescription = carExList[i].LongDescription,
+                };
+                product.SubCategory = new SubCategoryModel()
+                {
+                    Name = carExList[i].SubCategory,
+                    Category = new CategoryModel() { Name = "Car" }
+                };
+                products.Add(product);
+            }
+            return products;
         }
 
+        public static List<SubCategoryModel> ToSubCategoriesFromProducts(this List<ProductModel> products)
+        {
+            List<SubCategoryModel> subCategories = new List<SubCategoryModel>();
+
+            foreach (var product  in products)
+            {
+                var foundSubCategory = subCategories.Find(s=>s.Id==product.SubCategory.Id);
+                if (foundSubCategory != null) 
+                {
+                    product.SubCategory = null;
+                    foundSubCategory.Products.Add(product);
+                }
+                else
+                {
+                    SubCategoryModel newSubCategory= new SubCategoryModel()
+                    {
+                        Id = product.SubCategory.Id,
+                        Name = product.SubCategory.Name,
+                        Products= new List<ProductModel>() { product }
+                    };
+                    subCategories.Add(newSubCategory);
+                }
+            }
+            return subCategories;
+        }
     }   
 }

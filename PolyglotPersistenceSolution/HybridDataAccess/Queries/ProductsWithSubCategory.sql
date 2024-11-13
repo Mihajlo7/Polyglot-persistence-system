@@ -6,7 +6,7 @@ CROSS APPLY OPENJSON(products)
 WITH (
 	id BIGINT '$.id',
 	name NVARCHAR(30) '$.name',
-	price DECIMAL(5,2) '$.price'
+	price DECIMAL(7,2) '$.price'
 	)AS product;
 
 -- Get product by Id --
@@ -16,7 +16,7 @@ CROSS APPLY OPENJSON(products)
 WITH (
 	id BIGINT '$.id',
 	name NVARCHAR(30) '$.name',
-	price DECIMAL(5,2) '$.price'
+	price DECIMAL(7,2) '$.price'
 	)AS product
 WHERE product.id=@ProductId;
 
@@ -32,11 +32,19 @@ WHERE name=@SubCategoryName;
 
 -- Update price by ProductId --
 WITH cte AS(
-	SELECT *
-	FROM SubCategories CROSS APPLY OPENJSON(products)
+	SELECT [key],products
+	FROM SubCategories CROSS APPLY OPENJSON(products) p
+	WHERE JSON_VALUE(p.value,'$.Id')=@ProductId
 )
 UPDATE cte
 SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',@Price)
 
 -- Update price by SubCategoryId
+WITH cte AS(
+	SELECT [key],[value], JSON_VALUE([value],'$.Price') Price, id
+	FROM SubCategories CROSS APPLY OPENJSON(products)
+	WHERE id=1
+)
+UPDATE cte
+SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)
 
