@@ -1,5 +1,7 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
 using PerfomanceMeasure.Consumer.Insert;
+using PerfomanceMeasure.Consumer.Select;
 
 namespace PerfomanceMeasure
 {
@@ -7,7 +9,9 @@ namespace PerfomanceMeasure
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<InsertConsumerBenchMark>();
+           // var config = ManualConfig.Create(DefaultConfig.Instance)
+             //   .WithArtifactsPath(@"C:\Benchmarks");
+            BenchmarkRunner.Run<SelectConsumersBenchmark>();
         }
     }
 }
