@@ -1,4 +1,5 @@
 ﻿using Core.Models;
+using IDataAccess;
 using Microsoft.Data.SqlClient;
 using RelationDataAccess.HelperSqlData;
 using RelationDataAccess.Resources;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RelationDataAccess.Implementation
 {
-    public class SqlProductWithCompaniesRepository
+    public class SqlProductWithCompaniesRepository : IProductWithCompaniesRepository
     {
         private readonly string _connectionString;
         private readonly string _database;
