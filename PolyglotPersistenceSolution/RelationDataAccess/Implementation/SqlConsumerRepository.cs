@@ -75,7 +75,7 @@ namespace RelationDataAccess.Implementation
 
             connection.Open();
             using var reader = await command.ExecuteReaderAsync();
-            var consumer=reader.GetConsumersFromReader().First();
+            var consumer = reader.GetConsumersFromReader().First();
 
             return consumer;
         }
@@ -87,9 +87,9 @@ namespace RelationDataAccess.Implementation
             command.CommandTimeout = 120;
 
             connection.Open();
-            using var reader= await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
-            var consumers=reader.GetConsumersFromReaderBadWay();
+            var consumers = reader.GetConsumersFromReaderBadWay();
 
             return consumers;
         }
@@ -99,7 +99,7 @@ namespace RelationDataAccess.Implementation
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(ConsumerQueries.GetConsumersByEmailAndFriendshipLevel, connection);
             command.Parameters.AddWithValue("@Email", email);
-            command.Parameters.AddWithValue("@FriendshipLevel",level);
+            command.Parameters.AddWithValue("@FriendshipLevel", level);
 
             connection.Open();
             using var reader = await command.ExecuteReaderAsync();
@@ -117,7 +117,7 @@ namespace RelationDataAccess.Implementation
             connection.Open();
             using var reader = await command.ExecuteReaderAsync();
 
-            var consumers= reader.GetConsumersFromReader();
+            var consumers = reader.GetConsumersFromReader();
             return consumers;
 
         }
@@ -143,7 +143,7 @@ namespace RelationDataAccess.Implementation
             connection.Open();
 
             int count = 0;
-            foreach(var consumer in consumers)
+            foreach (var consumer in consumers)
             {
                 command.CreateConsumerCommand(consumer);
                 await command.ExecuteNonQueryAsync();
@@ -156,7 +156,7 @@ namespace RelationDataAccess.Implementation
         public async Task<int> InsertManyFriend(List<ConsumerModel> consumerFriends)
         {
             List<ConsumerFriendModel> consumersModels = new List<ConsumerFriendModel>();
-            foreach(var consumer in consumerFriends)
+            foreach (var consumer in consumerFriends)
             {
                 if (consumer.Friends != null)
                 {
@@ -166,6 +166,7 @@ namespace RelationDataAccess.Implementation
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand("CreateConsumerFriends", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
+            command.CommandTimeout = 120;
 
             connection.Open();
             int count = 0;
@@ -197,14 +198,14 @@ namespace RelationDataAccess.Implementation
             command.CreateConsumerFriendBulkCommand(consumersModels);
 
             await command.ExecuteNonQueryAsync();
-            
+
         }
 
         public async Task InsertOneConsumer(ConsumerModel consumer)
         {
             using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("CreateUser",connection);
-            command.CommandType=System.Data.CommandType.StoredProcedure;
+            using var command = new SqlCommand("CreateUser", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
 
             connection.Open();
             command.CreateConsumerCommand(consumer);
@@ -259,7 +260,7 @@ namespace RelationDataAccess.Implementation
             using var command = new SqlCommand(query, connection);
 
             command.Parameters.AddWithValue("@telephone", telephone);
-            command.Parameters.AddWithValue("@email",email);
+            command.Parameters.AddWithValue("@email", email);
             connection.Open();
             await command.ExecuteNonQueryAsync();
         }
@@ -273,7 +274,7 @@ namespace RelationDataAccess.Implementation
             command.Parameters.AddWithValue("@telephone", telephone);
             command.Parameters.AddWithValue("@consumerId", consumerId);
             connection.Open();
-            
+
             await command.ExecuteNonQueryAsync();
         }
     }
