@@ -5,8 +5,10 @@ namespace IDataAccess
     public interface IProductWithCompaniesRepository
     {
         public Task InsertOne(ProductModel product);
-        public Task<int> InsertMany (List<ProductModel> product);
-        public Task<int> InsertManyBulk (List<ProductModel> products);
+        public Task<int> InsertMany(List<ProductModel> product);
+        public Task<int> InsertManyBulk(List<ProductModel> products);
+        public Task InsertSeller(SellerModel seller);
+        public Task<int> InsertManySellers(List<SellerModel> sellers);
         public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelect();
         public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectOptimised();
         public Task<List<ProductModel>> GetAllProductsWithCompaniesBySelectSubQuery();
