@@ -43,7 +43,16 @@ SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',@Price)
 WITH cte AS(
 	SELECT [key],[value], JSON_VALUE([value],'$.Price') Price, id
 	FROM SubCategories CROSS APPLY OPENJSON(products)
-	WHERE id=1
+	WHERE id=@ProductId
+)
+UPDATE cte
+SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)
+
+-- Update price by SubCategoryName
+WITH cte AS(
+	SELECT [key],[value], JSON_VALUE([value],'$.Price') Price, id
+	FROM SubCategories CROSS APPLY OPENJSON(products)
+	WHERE name=@SubcategoryName
 )
 UPDATE cte
 SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)

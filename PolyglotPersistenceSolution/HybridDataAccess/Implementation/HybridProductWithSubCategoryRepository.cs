@@ -207,19 +207,45 @@ namespace HybridDataAccess.Implementation
 
         }
 
-        public Task UpdatePriceByProductId(long productId, decimal price)
+        public async Task UpdatePriceByProductId(long productId, decimal price)
         {
-            throw new NotImplementedException();
+            string query = "WITH cte AS(\r\n\tSELECT [key],products\r\n\tFROM SubCategories CROSS APPLY OPENJSON(products) p\r\n\tWHERE JSON_VALUE(p.value,'$.Id')=@ProductId\r\n)\r\nUPDATE cte\r\nSET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',@Price)\r\n";
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand(query,connection);
+
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@ProductId",productId);
+            command.Parameters.AddWithValue("@Price",price);
+
+            connection.Open();
+            await command.ExecuteNonQueryAsync();
         }
 
-        public Task UpdatePriceBySubCategoryId(long subCategoryId, decimal price)
+        public async Task UpdatePriceBySubCategoryId(long subCategoryId, decimal price)
         {
-            throw new NotImplementedException();
+            string query = "WITH cte AS(\r\n\tSELECT [key],[value], JSON_VALUE([value],'$.Price') Price, id\r\n\tFROM SubCategories CROSS APPLY OPENJSON(products)\r\n\tWHERE id=@ProductId\r\n)\r\nUPDATE cte\r\nSET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)\r\n";
+            using var connestion = new SqlConnection(_connectionString);
+            using var command= new SqlCommand(query,connestion);
+
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@ProductId",subCategoryId);
+
+            connestion.Open();
+
+            await command.ExecuteNonQueryAsync();
         }
 
-        public Task UpdatePriceBySubCategoryName(string subCategoryName, decimal price)
+        public async Task UpdatePriceBySubCategoryName(string subCategoryName, decimal price)
         {
-            throw new NotImplementedException();
+            string query = "WITH cte AS(\r\n\tSELECT [key],[value], JSON_VALUE([value],'$.Price') Price, id\r\n\tFROM SubCategories CROSS APPLY OPENJSON(products)\r\n\tWHERE name=@SubcategoryName\r\n)\r\nUPDATE cte\r\nSET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)\r\n";
+            using var connection = new SqlConnection(_connectionString);
+            using var command= new SqlCommand(query,connection);
+
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("@SubcategoryName", subCategoryName);
+
+            connection.Open();
+            await command.ExecuteNonQueryAsync();
         }
 
         public async Task<List<ProductModel>> GetAllProducts()
