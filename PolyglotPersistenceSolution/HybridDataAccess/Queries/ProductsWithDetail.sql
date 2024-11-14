@@ -39,3 +39,7 @@ BEGIN
 	SELECT Id, Name,Price,Detail,SubCategoryId
 	FROM @ProductsWithDetails
 END;
+
+SELECT * FROM Products;
+
+SELECT p.id Id, p.name Name,p.price Price,p.detail Detail,p.subCategoryId SubCategoryId FROM Products p;

@@ -57,3 +57,4 @@ WITH cte AS(
 UPDATE cte
 SET products = JSON_MODIFY(products,'$['+cte.[key]+'].Price',Price*0.2+Price)
 
+
