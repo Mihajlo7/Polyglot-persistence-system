@@ -148,7 +148,7 @@ namespace HybridDataAccess.Implementation
 
         public async Task<int> InsertMany(List<ProductModel> products)
         {
-            string query = "UPDATE SubCategories SET products=JSON_MODIFY(products,'append $',JSON_QUERY(@Product)) WHERE id=@SubCategoryId";
+            string query = "UPDATE SubCategories \r\nSET products = JSON_MODIFY(ISNULL(products, '[]'), 'append $', JSON_QUERY(@Product)) \r\nWHERE id = @SubCategoryId;";
             int count = 0;
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
@@ -193,7 +193,7 @@ namespace HybridDataAccess.Implementation
 
         public async Task InsertOne(ProductModel product)
         {
-            string query = "UPDATE SubCategories SET products=JSON_MODIFY(products,'append $',JSON_QUERY(@Product)) WHERE id=@SubCategoryId";
+            string query = "UPDATE SubCategories \r\nSET products = JSON_MODIFY(ISNULL(products, '[]'), 'append $', JSON_QUERY(@Product)) \r\nWHERE id = @SubCategoryId;";
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);

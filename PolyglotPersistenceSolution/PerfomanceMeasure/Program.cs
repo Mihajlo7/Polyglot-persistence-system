@@ -3,6 +3,7 @@ using BenchmarkDotNet.Running;
 using PerfomanceMeasure.Consumer.Insert;
 using PerfomanceMeasure.Consumer.Select;
 using PerfomanceMeasure.Consumer.Update;
+using PerfomanceMeasure.ProductsWithSubcategory;
 
 namespace PerfomanceMeasure
 {
@@ -12,7 +13,7 @@ namespace PerfomanceMeasure
         {
            // var config = ManualConfig.Create(DefaultConfig.Instance)
              //   .WithArtifactsPath(@"C:\Benchmarks");
-            BenchmarkRunner.Run<UpdateConsumerBenchmark>();
+            BenchmarkRunner.Run<InsertProductWithSubcategoryHybridBenchmark>();
         }
     }
 }

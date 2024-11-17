@@ -1,7 +1,9 @@
-﻿using HybridDataAccess.Implementation;
+﻿using Core.Models;
+using HybridDataAccess.Implementation;
 using Microsoft.AspNetCore.Mvc;
 using RelationDataAccess.Implementation;
 using Services;
+using Services.JsonWorker;
 
 namespace API.Controllers
 {
@@ -29,6 +31,18 @@ namespace API.Controllers
             await hybridConsumerRepository.DeleteConsumersFriends();
             await hybridConsumerRepository.InsertManyFriendBulk(consumers);
             return Ok("Setup hybrid database");
+        }
+
+        [HttpGet("products/large")]
+        public async Task InsertProductsLarge()
+        {
+            SqlProductWithSubCategoryRepository productWithSubCategoryRepository = new("small_db");
+
+            JsonWorkerClass jsonWorker = new("Data");
+
+            productWithSubCategoryRepository = new("large_db");
+            var products = jsonWorker.ReadObjectsFromFile<ProductModel>("Products_Large.json");
+            int res = await productWithSubCategoryRepository.InsertMany(products);
         }
     }
 }
