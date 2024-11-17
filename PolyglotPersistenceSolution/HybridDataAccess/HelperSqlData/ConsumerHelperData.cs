@@ -67,11 +67,11 @@ namespace HybridDataAccess.HelperSqlData
                     Email = reader.GetString(1),
                     //2
                     //3
-                    FirstName = reader.GetString(4),
-                    LastName = reader.GetString(5),
-                    BirthDate= reader.GetDateTime(6),
-                    Telephone = reader.GetString(7),
-                    Friends= JsonSerializer.Deserialize<List<ConsumerFriendModel>>(reader.GetString(8))
+                    FirstName = reader.GetString(5),
+                    LastName = reader.GetString(6),
+                    BirthDate= reader.GetDateTime(7),
+                    Telephone = reader.GetString(8),
+                    Friends= JsonSerializer.Deserialize<List<ConsumerFriendModel>>(reader.GetString(9))
                 };
 
                 consumers.Add(consumer);

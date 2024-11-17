@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HybridDataAccess\HybridDataAccess.csproj" />
     <ProjectReference Include="..\RelationDataAccess\RelationDataAccess.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\SQLDataAccess\SQLDataAccess.csproj" />

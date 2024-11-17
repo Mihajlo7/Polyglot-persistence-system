@@ -9,7 +9,7 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class SeedController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("products")]
         public async Task<IActionResult> SetProductsToSubCategories()
         {
             SqlProductWithSubCategoryRepository sqlProductWithSubCategoryRepository = new("small_db");
@@ -19,6 +19,16 @@ namespace API.Controllers
 
             await hybridProductWithSubCategoryRepository.InsertManyBulkOpt(subCategories);
             return Ok(subCategories);
+        }
+        [HttpGet("consumers")]
+        public async Task<IActionResult> SetConsumersAndFriends()
+        {
+            SqlConsumerRepository sqlProductWithSubCategoryRepository = new("large_db");
+            var consumers = await sqlProductWithSubCategoryRepository.GetConsumersOptimised();
+            HybridConsumerRepository hybridConsumerRepository = new("hybrid_small_db");
+            await hybridConsumerRepository.DeleteConsumersFriends();
+            await hybridConsumerRepository.InsertManyFriendBulk(consumers);
+            return Ok("Setup hybrid database");
         }
     }
 }

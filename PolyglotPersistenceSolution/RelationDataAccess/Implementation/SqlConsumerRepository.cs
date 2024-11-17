@@ -229,7 +229,7 @@ namespace RelationDataAccess.Implementation
         {
             string query = "UPDATE ConsumerFriends " +
                 "SET friendshipLevel=@level " +
-                "WHERE consumerId= IN (SELECT id FROM Consumers WHERE firstname=@name)";
+                "WHERE consumerId IN (SELECT id FROM Consumers WHERE firstname=@name)";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
@@ -255,7 +255,7 @@ namespace RelationDataAccess.Implementation
 
         public async Task UpdateConsumerTelephoneByEmail(string email, string telephone)
         {
-            string query = "UPDATE Consumers= SET telephone=@telephone WHERE email=@email";
+            string query = "UPDATE Consumers SET telephone=@telephone WHERE id IN (SELECT id FROM Users WHERE email=@email)";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
@@ -267,7 +267,7 @@ namespace RelationDataAccess.Implementation
 
         public async Task UpdateConsumerTelephoneById(long consumerId, string telephone)
         {
-            string query = "UPDATE Consumers= SET telephone=@telephone WHERE id=@consumerId";
+            string query = "UPDATE Consumers  SET telephone=@telephone WHERE id=@consumerId";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 

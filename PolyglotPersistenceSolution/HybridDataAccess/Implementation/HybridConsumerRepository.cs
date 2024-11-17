@@ -238,6 +238,7 @@ namespace HybridDataAccess.Implementation
                 "WHERE c.firstname=@name";
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@name",name);
 
             connection.Open();
             using var reader = await command.ExecuteReaderAsync();
@@ -259,7 +260,7 @@ namespace HybridDataAccess.Implementation
             command.Parameters.Clear();
             command.Parameters.AddWithValue("@ConsumerId", id);
             command.Parameters.AddWithValue("@FriendshipLevel", level);
-
+            connection.Open();
             await command.ExecuteNonQueryAsync();
         }
 
