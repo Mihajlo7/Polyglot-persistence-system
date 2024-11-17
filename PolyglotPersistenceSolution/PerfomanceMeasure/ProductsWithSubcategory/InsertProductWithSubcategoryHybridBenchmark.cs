@@ -17,7 +17,7 @@ namespace PerfomanceMeasure.ProductsWithSubcategory
     public class InsertProductWithSubcategoryHybridBenchmark
     {
         public HybridProductWithSubCategoryRepository _database = new("hybrid_small_db");
-        public SqlProductWithSubCategoryRepository _db = new("small_db");
+        public SqlProductWithSubCategoryRepository _db = new("large_db");
         public List<ProductModel> dataSet { get; set; }
         public List<SubCategoryModel> dataSetSubcategory { get; set; } = new();
 
