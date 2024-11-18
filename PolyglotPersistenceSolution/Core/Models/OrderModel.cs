@@ -12,7 +12,7 @@ namespace Core.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public OrderStatus Status { get; set; }
-        public string TypeOrder { get; set; }
+        public int TypeOrder { get; set; }
         public string Address { get; set; }
         public string? PostalCode { get; set; }
         public string City { get; set; }

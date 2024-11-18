@@ -12,6 +12,8 @@ namespace IDataAccess
         public Task InsertChart(ChartModel chart);
         public Task UpdateChart(ChartModel chart);
         public Task AddProduct(ProductModel product,ChartModel chart);
+        public Task<bool> DeleteCharts();
+        public Task<bool> DeleteChartsByConsumerId (long consumerId);
         public Task<bool> DeleteProduct(ProductModel product, ChartModel chart);
         public Task<ChartModel> GetAllChartsBadWay(ProductModel product);
         public Task InsertOneOrder(OrderModel order);

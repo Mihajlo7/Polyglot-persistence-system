@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RelationDataAccess.Implementation;
 using Services;
 using Services.JsonWorker;
+using Services.Setup;
 
 namespace API.Controllers
 {
@@ -43,6 +44,19 @@ namespace API.Controllers
             productWithSubCategoryRepository = new("large_db");
             var products = jsonWorker.ReadObjectsFromFile<ProductModel>("Products_Large.json");
             int res = await productWithSubCategoryRepository.InsertMany(products);
+        }
+        [HttpGet("charts")]
+        public async Task<ChartModel> InsertCharts()
+        {
+            SqlOrderRepository sqlOrderRepository = new("small_db");
+            /*
+            SeedService seedService = new();
+            var chart = await seedService.CreateOneChart(0,"small_db");
+            await sqlOrderRepository.InsertChart(chart);
+            return chart;
+            */
+            await sqlOrderRepository.DeleteCharts();
+            return null;
         }
     }
 }
