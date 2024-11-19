@@ -40,6 +40,9 @@ BEGIN
 	FROM @ProductsWithDetails
 END;
 
+-- Getting all products bad way
 SELECT * FROM Products;
 
+-- Getting all products good way
 SELECT p.id Id, p.name Name,p.price Price,p.detail Detail,p.subCategoryId SubCategoryId FROM Products p;
+
